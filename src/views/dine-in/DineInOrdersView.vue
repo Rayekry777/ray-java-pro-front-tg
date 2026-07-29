@@ -1,0 +1,35 @@
+<script setup lang="ts">
+import { onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { dineInApi, resourceApi } from "@/api/services";
+import { errorMessage } from "@/api/http";
+import type { DineInOrder, Dish } from "@/types";
+
+const route=useRoute(), loading=ref(false), actionId=ref<number>(), rows=ref<DineInOrder[]>([]), total=ref(0), detail=ref<DineInOrder>(), detailVisible=ref(false);
+const query=reactive({page:1,pageSize:10,orderNo:"",status:""});
+const addVisible=ref(false), adding=ref(false), addOrder=ref<DineInOrder>(), dishes=ref<Dish[]>([]), quantities=reactive<Record<number,number>>({});
+const statusMap:Record<string,[string,string]>={DINING:["就餐中","primary"],WAIT_KITCHEN:["待下厨","warning"],COOKING:["出餐中","primary"],WAIT_CHECKOUT:["待结账","warning"],PAID:["已结账","success"],COMPLETED:["已清台","info"],CANCELLED:["已取消","info"]};
+async function load(){loading.value=true;try{const result=await dineInApi.orders(query);rows.value=result.records;total.value=result.total}catch(e){ElMessage.error(errorMessage(e))}finally{loading.value=false}}
+async function showDetail(id:number){try{detail.value=await dineInApi.orderDetail(id);detailVisible.value=true}catch(e){ElMessage.error(errorMessage(e))}}
+async function prepareAdd(row:DineInOrder){addOrder.value=row;addVisible.value=true;try{const result=await resourceApi.dishes({page:1,pageSize:100,status:1});dishes.value=result.records}catch(e){ElMessage.error(errorMessage(e))}}
+async function addItems(){if(!addOrder.value)return;const items=Object.entries(quantities).filter(([,quantity])=>quantity>0).map(([dishId,quantity])=>({dishId:Number(dishId),quantity}));if(!items.length){ElMessage.warning("请至少选择一道菜");return}adding.value=true;try{await dineInApi.addItems(addOrder.value.id,{items});ElMessage.success("菜品已加入订单");addVisible.value=false;Object.keys(quantities).forEach(key=>delete quantities[Number(key)]);await load()}catch(e){ElMessage.error(errorMessage(e))}finally{adding.value=false}}
+async function act(row:DineInOrder,type:"kitchen"|"pay"|"clear"|"cancel"){actionId.value=row.id;try{
+  if(type==="kitchen")await dineInApi.submitKitchen(row.id);
+  if(type==="pay"){const preview=await dineInApi.checkoutPreview(row.id);await ElMessageBox.confirm(`应收 ¥${preview.payableAmount.toFixed(2)}，确认记录为现金收款？`,"堂食结账");await dineInApi.pay(row.id,{paymentMethod:"CASH",payableAmount:preview.payableAmount})}
+  if(type==="clear")await dineInApi.clearTable(row.id);
+  if(type==="cancel"){const {value}=await ElMessageBox.prompt("请输入取消原因","取消堂食订单",{inputValidator:v=>Boolean(v.trim())||"原因不能为空"});await dineInApi.cancel(row.id,value)}
+  ElMessage.success("堂食订单状态已更新");await load()
+}catch(e){if(e!=="cancel"&&e!=="close")ElMessage.error(errorMessage(e))}finally{actionId.value=undefined}}
+onMounted(async()=>{await load();const id=Number(route.query.orderId);if(id)showDetail(id)});
+</script>
+<template><div class="page">
+  <div class="page-title compact"><div><p class="eyebrow">DINE-IN ORDERS</p><h1>堂食订单</h1><p>管理从开台、下厨、结账到清台的完整堂食流程。</p></div><router-link class="button secondary" to="/dine-in/tables">返回桌台</router-link></div>
+  <section class="panel filter-bar"><el-input v-model="query.orderNo" placeholder="订单号" clearable/><el-select v-model="query.status" placeholder="订单状态" clearable><el-option v-for="(v,k) in statusMap" :key="k" :label="v[0]" :value="String(k)"/></el-select><el-button type="primary" @click="query.page=1;load()">查询</el-button></section>
+  <section class="panel table-panel"><el-table :data="rows" v-loading="loading" empty-text="暂无堂食订单">
+    <el-table-column prop="orderNo" label="订单号" min-width="150"/><el-table-column prop="tableName" label="桌台" width="100"/><el-table-column prop="guestCount" label="人数" width="75"/><el-table-column label="状态" width="105"><template #default="{row}"><el-tag :type="statusMap[row.status]?.[1]||'info'">{{statusMap[row.status]?.[0]||row.status}}</el-tag></template></el-table-column><el-table-column label="应付金额" width="110"><template #default="{row}">¥{{row.payableAmount.toFixed(2)}}</template></el-table-column><el-table-column prop="openedAt" label="开台时间" width="170"/>
+    <el-table-column label="操作" fixed="right" width="335"><template #default="{row}"><el-button link @click="showDetail(row.id)">详情</el-button><el-button v-if="['DINING','WAIT_KITCHEN','COOKING'].includes(row.status)" link type="primary" @click="prepareAdd(row)">加菜</el-button><el-button v-if="['DINING','WAIT_KITCHEN'].includes(row.status)" link type="primary" :loading="actionId===row.id" @click="act(row,'kitchen')">下厨</el-button><el-button v-if="['DINING','COOKING','WAIT_CHECKOUT'].includes(row.status)" link type="success" @click="act(row,'pay')">结账</el-button><el-button v-if="row.status==='PAID'" link type="primary" @click="act(row,'clear')">清台</el-button><el-button v-if="['DINING','WAIT_KITCHEN'].includes(row.status)" link type="danger" @click="act(row,'cancel')">取消</el-button></template></el-table-column>
+  </el-table><el-pagination v-model:current-page="query.page" v-model:page-size="query.pageSize" layout="total, prev, pager, next" :total="total" @current-change="load"/></section>
+  <el-drawer v-model="detailVisible" title="堂食订单详情" size="min(620px,94vw)"><template v-if="detail"><el-descriptions :column="2" border><el-descriptions-item label="订单号">{{detail.orderNo}}</el-descriptions-item><el-descriptions-item label="桌台">{{detail.areaName}} · {{detail.tableName}}</el-descriptions-item><el-descriptions-item label="人数">{{detail.guestCount}} 人</el-descriptions-item><el-descriptions-item label="服务员">{{detail.waiterName||"未指定"}}</el-descriptions-item><el-descriptions-item label="备注" :span="2">{{detail.remark||"无"}}</el-descriptions-item></el-descriptions><h3 class="drawer-section-title">已点菜品</h3><el-table :data="detail.items" empty-text="尚未点菜"><el-table-column prop="name" label="菜品"/><el-table-column prop="quantity" label="数量" width="70"/><el-table-column prop="status" label="出餐状态" width="110"/><el-table-column label="金额" width="90"><template #default="{row}">¥{{row.amount.toFixed(2)}}</template></el-table-column></el-table></template></el-drawer>
+  <el-dialog v-model="addVisible" :title="`加菜 · ${addOrder?.tableName||''}`" width="min(680px,94vw)"><el-table :data="dishes" max-height="430" empty-text="暂无可售菜品"><el-table-column prop="name" label="菜品"/><el-table-column prop="categoryName" label="分类"/><el-table-column label="价格" width="100"><template #default="{row}">¥{{(row.price/100).toFixed(2)}}</template></el-table-column><el-table-column label="数量" width="150"><template #default="{row}"><el-input-number v-model="quantities[row.id]" :min="0" :max="20" size="small"/></template></el-table-column></el-table><template #footer><el-button @click="addVisible=false">取消</el-button><el-button type="primary" :loading="adding" @click="addItems">加入订单</el-button></template></el-dialog>
+</div></template>

@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ray 餐厅运营台 · 后厨出餐台设计实验室</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <div class="lab-shell">
+      <aside class="sidebar" aria-label="主要导航">
+        <div class="brand">
+          <span class="brand-mark">R</span>
+          <span><strong>Ray</strong><small>餐厅运营台</small></span>
+        </div>
+        <nav>
+          <a class="nav-item active" href="#workspace" aria-current="page"><span>⌂</span>工作台</a>
+          <a class="nav-item" href="#orders"><span>▤</span>订单管理<b>3</b></a>
+          <a class="nav-item" href="#dishes"><span>♨</span>菜品管理</a>
+          <a class="nav-item" href="#setmeals"><span>▣</span>套餐管理</a>
+          <a class="nav-item" href="#categories"><span>⌘</span>分类管理</a>
+          <a class="nav-item" href="#employees"><span>♙</span>员工管理</a>
+          <a class="nav-item" href="#reports"><span>▥</span>数据统计</a>
+        </nav>
+        <div class="store-card">
+          <span class="status-dot"></span>
+          <div><strong>午市营业中</strong><small>10:30—14:30</small></div>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar">
+          <button class="icon-button mobile-menu" aria-label="打开导航">☰</button>
+          <div class="store-select"><span>门店</span><strong>Ray 现代中餐厅</strong><span>⌄</span></div>
+          <div class="top-actions">
+            <span class="freshness">更新于 11:45:30</span>
+            <button class="icon-button" aria-label="刷新数据">↻</button>
+            <button class="icon-button notification" aria-label="3 条通知">♢<b>3</b></button>
+            <button class="avatar" aria-label="打开张店长的账号菜单">张</button>
+          </div>
+        </header>
+
+        <main id="main">
+          <section class="lab-controls" aria-label="设计实验状态切换">
+            <div>
+              <strong>设计实验室</strong>
+              <span>切换页面状态，验证反馈与极端情况</span>
+            </div>
+            <div class="state-switcher" role="group" aria-label="页面状态">
+              <button class="state-button active" data-state="success">成功</button>
+              <button class="state-button" data-state="loading">加载</button>
+              <button class="state-button" data-state="empty">空状态</button>
+              <button class="state-button" data-state="error">错误</button>
+              <button class="state-button" data-state="long">长文本</button>
+            </div>
+          </section>
+
+          <section class="page-heading" id="workspace">
+            <div>
+              <p class="eyebrow">07 / 26 · 午市班次</p>
+              <h1>午市运营中 <span class="rush-stamp">高峰期</span></h1>
+              <p>先处理即将超时的订单，再关注菜品余量。</p>
+            </div>
+            <div class="business-switch">
+              <span class="status-dot"></span>
+              <div><small>店铺状态</small><strong>营业中</strong></div>
+              <button class="switch on" role="switch" aria-checked="true" aria-label="店铺营业状态"><span></span></button>
+            </div>
+          </section>
+
+          <section class="metrics" aria-label="今日运营数据">
+            <article><span>今日营业额</span><strong>¥12,680.50</strong><small class="up">较昨日 +8.7%</small></article>
+            <article><span>有效订单</span><strong>86<em>单</em></strong><small>已完成 79 单</small></article>
+            <article><span>订单完成率</span><strong>92<em>%</em></strong><small class="up">高于近 7 日</small></article>
+            <article><span>平均客单价</span><strong>¥47.30</strong><small>堂食占比 64%</small></article>
+            <article><span>新增用户</span><strong>24<em>人</em></strong><small>午市新增 16 人</small></article>
+          </section>
+
+          <section class="pass-panel" id="orders" aria-labelledby="pass-title">
+            <div class="panel-heading">
+              <div><p class="eyebrow">LIVE ORDER PASS</p><h2 id="pass-title">实时订单出餐台 <span class="count">3</span></h2></div>
+              <div class="filters">
+                <button class="filter active">全部渠道</button>
+                <button class="filter">只看未接单</button>
+                <button class="filter">只看超时</button>
+              </div>
+            </div>
+            <div class="metal-rail" aria-hidden="true"></div>
+            <div class="orders-grid" data-content>
+              <article class="order-ticket urgent">
+                <div class="ticket-clip" aria-hidden="true"></div>
+                <header><strong>#082</strong><span class="tag danger">即将超时</span></header>
+                <div class="order-meta"><span>美团外卖</span><time>11:44</time></div>
+                <p class="deadline">期望送达 12:10 · 剩余 24:35</p>
+                <ul><li>毛血旺（大份）<b>×1</b></li><li>酸菜鱼（大份）<b>×1</b></li><li>米饭<b>×1</b></li></ul>
+                <p class="note">备注：不要香菜，多辣</p>
+                <div class="ticket-actions"><button class="button secondary">拒单</button><button class="button primary autofocus">接单</button></div>
+              </article>
+              <article class="order-ticket">
+                <div class="ticket-clip" aria-hidden="true"></div>
+                <header><strong>#083</strong><span class="tag info">正常</span></header>
+                <div class="order-meta"><span>堂食 · A-08</span><time>11:43</time></div>
+                <p class="deadline normal">就餐人数 2 人 · 4 件商品</p>
+                <ul><li>宫保鸡丁<b>×1</b></li><li>干煸四季豆<b>×1</b></li><li>番茄炒蛋<b>×1</b></li><li>米饭<b>×1</b></li></ul>
+                <div class="ticket-actions"><button class="button secondary">拒单</button><button class="button brass">接单</button></div>
+              </article>
+              <article class="order-ticket">
+                <div class="ticket-clip" aria-hidden="true"></div>
+                <header><strong>#079</strong><span class="tag success">待派送</span></header>
+                <div class="order-meta"><span>饿了么</span><time>11:35</time></div>
+                <p class="deadline normal">期望送达 11:55</p>
+                <ul><li>红烧狮子头<b>×1</b></li><li>清炒时蔬<b>×1</b></li></ul>
+                <p class="note neutral">备注：少油少盐</p>
+                <div class="ticket-actions"><button class="button secondary">查看详情</button><button class="button brass">派送</button></div>
+              </article>
+            </div>
+
+            <div class="feedback-state loading-state" hidden>
+              <div class="skeleton short"></div><div class="skeleton"></div><div class="skeleton"></div>
+              <p>正在同步实时订单…</p>
+            </div>
+            <div class="feedback-state empty-state" hidden>
+              <div class="empty-icon">▤</div><h3>当前没有待处理订单</h3><p>新订单会自动出现在出餐台。</p>
+            </div>
+            <div class="feedback-state error-state" hidden>
+              <div class="error-icon">!</div><h3>订单同步失败</h3><p>网络连接中断，页面保留了 11:42 的订单数据。</p><button class="button primary">重新连接</button>
+            </div>
+          </section>
+
+          <section class="lower-grid">
+            <article class="data-panel" id="dishes">
+              <div class="panel-heading compact"><div><p class="eyebrow">AVAILABILITY</p><h2>菜品 / 套餐可售概览</h2></div><a href="#dishes">管理菜品 →</a></div>
+              <div class="availability">
+                <div><span>菜品</span><strong>58<small>/ 68 可售</small></strong><div class="bar"><i style="width:85%"></i></div></div>
+                <div><span>套餐</span><strong>12<small>/ 14 可售</small></strong><div class="bar"><i style="width:86%"></i></div></div>
+              </div>
+              <table>
+                <thead><tr><th>分类</th><th>总数</th><th>可售</th><th>停售</th></tr></thead>
+                <tbody><tr><td>热菜</td><td>28</td><td class="positive">23</td><td>5</td></tr><tr><td>凉菜</td><td>10</td><td class="positive">9</td><td>1</td></tr><tr><td>汤羹</td><td>6</td><td class="positive">6</td><td>0</td></tr></tbody>
+              </table>
+            </article>
+
+            <article class="data-panel">
+              <div class="panel-heading compact"><div><p class="eyebrow">ATTENTION</p><h2>售罄 / 余量预警</h2></div><a href="#dishes">查看全部 →</a></div>
+              <ul class="warning-list">
+                <li><span class="tag danger">售罄</span><div><strong>毛血旺（大份）</strong><small>11:20 售罄</small></div></li>
+                <li><span class="tag warning">预警</span><div><strong>小炒黄牛肉</strong><small>剩余 5 份</small></div><progress value="5" max="20"></progress></li>
+                <li><span class="tag warning">预警</span><div><strong>糖醋里脊</strong><small>剩余 6 份</small></div><progress value="6" max="20"></progress></li>
+              </ul>
+            </article>
+
+            <article class="data-panel ranking">
+              <div class="panel-heading compact"><div><p class="eyebrow">TOP SALES</p><h2>今日销售排行</h2></div><a href="#reports">数据统计 →</a></div>
+              <ol><li><b>1</b><span>毛血旺（大份）</span><strong>36</strong><small>¥1,404</small></li><li><b>2</b><span>酸菜鱼（大份）</span><strong>31</strong><small>¥1,240</small></li><li><b>3</b><span>宫保鸡丁</span><strong>28</strong><small>¥952</small></li><li><b>4</b><span>红烧狮子头</span><strong>26</strong><small>¥884</small></li></ol>
+            </article>
+          </section>
+
+          <section class="component-lab" aria-labelledby="component-title">
+            <div class="panel-heading"><div><p class="eyebrow">COMPONENT STATES</p><h2 id="component-title">组件状态与输入反馈</h2></div></div>
+            <div class="component-row">
+              <button class="button primary">默认操作</button>
+              <button class="button primary focus-demo">键盘聚焦</button>
+              <button class="button primary" disabled>禁用操作</button>
+              <label><span>订单备注</span><input value="少油少盐，不要香菜" /></label>
+              <label class="invalid"><span>拒单原因</span><input aria-invalid="true" value="" placeholder="请输入拒单原因" /><small>拒单原因不能为空</small></label>
+              <span class="success-message">✓ 店铺状态已更新</span>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <script src="./demo.js"></script>
+  </body>
+</html>
