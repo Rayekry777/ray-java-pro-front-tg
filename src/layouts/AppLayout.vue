@@ -22,7 +22,7 @@ const user = computed(() => {
 const groups = [
   { label: "", items: [["/", "工作台", HomeFilled]] },
   { label: "堂食运营", items: [["/dine-in/tables", "桌台管理", Menu], ["/dine-in/orders", "堂食订单", List], ["/dine-in/kitchen", "出餐管理", Food]] },
-  { label: "外卖运营", items: [["/delivery/orders", "外卖订单", List]] },
+  { label: "外带运营", items: [["/takeaway/orders", "外带订单", List]] },
   { label: "基础管理", items: [["/dishes", "菜品管理", Dish], ["/setmeals", "套餐管理", Food], ["/categories", "分类管理", Menu], ["/employees", "员工管理", UserFilled], ["/reports", "数据统计", DataAnalysis]] }
 ] as const;
 const businessTitle = computed(() => businessSettings.value?.effectiveStatus ? "营业中" : "已打烊");

@@ -21,13 +21,20 @@ export const workspaceApi = {
 };
 export const orderApi = {
   page: (params: Record<string, unknown>) => data<PageResult<Order>>(http.get("/admin/order/conditionSearch", { params })),
-  statistics: () => data<OrderStatistics>(http.get("/admin/order/statistics")),
+  statistics: async () => {
+    const stats = await data<Record<string, number>>(http.get("/admin/order/statistics"));
+    return {
+      toBeConfirmed: stats.toBeConfirmed || 0,
+      preparing: stats.preparing ?? stats.confirmed ?? 0,
+      readyForPickup: stats.readyForPickup ?? stats.deliveryInProgress ?? 0
+    } satisfies OrderStatistics;
+  },
   detail: (id: number) => data<Order>(http.get(`/admin/order/details/${id}`)),
   confirm: (id: number) => data<unknown>(http.put("/admin/order/confirm", { id })),
   reject: (id: number, rejectionReason: string) => data<unknown>(http.put("/admin/order/rejection", { id, rejectionReason })),
   cancel: (id: number, cancelReason: string) => data<unknown>(http.put("/admin/order/cancel", { id, cancelReason })),
-  deliver: (id: number) => data<unknown>(http.put(`/admin/order/delivery/${id}`)),
-  complete: (id: number) => data<unknown>(http.put(`/admin/order/complete/${id}`))
+  readyForPickup: (id: number) => data<unknown>(http.put(`/admin/order/ready/${id}`)),
+  collected: (id: number) => data<unknown>(http.put(`/admin/order/collected/${id}`))
 };
 export const dineInApi = {
   areas: () => data<DiningArea[]>(http.get("/admin/dine-in/areas")),

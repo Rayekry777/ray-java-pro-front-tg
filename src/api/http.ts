@@ -6,7 +6,7 @@ export const http = axios.create({ baseURL: import.meta.env.VITE_API_BASE || "/a
 
 http.interceptors.request.use((config) => {
   const token = sessionStorage.getItem(TOKEN_KEY);
-  if (token) config.headers.token = token;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 

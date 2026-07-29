@@ -17,11 +17,12 @@ const router = createRouter({
     {
       path: "/", component: AppLayout, children: [
         { path: "", name: "dashboard", component: DashboardView },
-        { path: "orders", redirect: "/delivery/orders" },
+        { path: "orders", redirect: "/takeaway/orders" },
+        { path: "delivery/orders", redirect: "/takeaway/orders" },
         { path: "dine-in/tables", name: "dine-in-tables", component: TablesView },
         { path: "dine-in/orders", name: "dine-in-orders", component: DineInOrdersView },
         { path: "dine-in/kitchen", name: "dine-in-kitchen", component: KitchenView },
-        { path: "delivery/orders", name: "delivery-orders", component: OrdersView },
+        { path: "takeaway/orders", name: "takeaway-orders", component: OrdersView },
         { path: "dishes", name: "dishes", component: ResourceView, props: { kind: "dishes" } },
         { path: "setmeals", name: "setmeals", component: ResourceView, props: { kind: "setmeals" } },
         { path: "categories", name: "categories", component: ResourceView, props: { kind: "categories" } },
