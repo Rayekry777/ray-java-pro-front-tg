@@ -18,7 +18,7 @@ async function openTable(){if(!selected.value)return;opening.value=true;try{cons
 onMounted(load);
 </script>
 <template><div class="page">
-  <div class="page-title compact"><div><p class="eyebrow">DINING ROOM</p><h1>桌台管理</h1><p>查看桌台状态，快速开台或进入当前堂食订单。</p></div><el-button @click="load">刷新桌台</el-button></div>
+  <header class="page-head"><div><p class="eyebrow">DINING ROOM</p><h1>桌台管理</h1><p>查看桌台状态，快速开台或进入当前堂食订单。</p></div><el-button @click="load">刷新桌台</el-button></header>
   <section class="order-summary"><article><span>空闲</span><strong>{{counts.available}}</strong></article><article><span>就餐中</span><strong>{{counts.occupied}}</strong></article><article><span>待结账</span><strong>{{counts.checkout}}</strong></article></section>
   <el-alert v-if="error" title="桌台数据加载失败" :description="error" type="error" show-icon><template #default><el-button @click="load">重试</el-button></template></el-alert>
   <section class="panel area-filter"><button :class="{active:!activeArea}" @click="activeArea=undefined">全部区域</button><button v-for="area in areas" :key="area.id" :class="{active:activeArea===area.id}" @click="activeArea=area.id">{{area.name}}</button></section>

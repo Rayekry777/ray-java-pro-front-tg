@@ -130,10 +130,10 @@ onMounted(loadProducts);
 <template>
   <div class="ordering-page">
     <section class="ordering-catalog">
-      <div class="page-title compact ordering-head">
-        <div><p class="eyebrow">UNIFIED ORDERING</p><h1>统一营业台</h1><p>先选菜，最后再决定堂食或现场外带。</p></div>
+      <header class="page-head ordering-head">
+        <div><p class="eyebrow">DRAFT · MERCHANT_WEB</p><h1>统一营业台</h1><p>先创建草稿并完成选品，结算时再选择堂食或外带。</p></div>
         <el-button @click="loadProducts">刷新商品</el-button>
-      </div>
+      </header>
       <div class="catalog-tools">
         <el-input v-model="keyword" size="large" clearable placeholder="搜索菜品或套餐"/>
         <el-radio-group v-model="activeKind" size="large">
@@ -147,17 +147,16 @@ onMounted(loadProducts);
           <div class="dish-media">
             <img v-if="product.image" :src="product.image" :alt="product.name"/>
             <span v-else>{{ product.name.slice(0, 1) }}</span>
-            <b>{{ product.kind === "dish" ? "单点" : "套餐" }}</b>
           </div>
-          <div class="dish-content"><small>{{ product.categoryName }}</small><h3>{{ product.name }}</h3><p>{{ product.description || "门店当日供应" }}</p><strong>{{ money(product.price) }}</strong></div>
+          <div class="dish-copy"><strong>{{ product.name }}</strong><strong>{{ money(product.price) }}</strong></div>
         </article>
         <el-empty v-if="!loading&&!filtered.length" description="当前没有可售商品"/>
       </section>
     </section>
 
     <aside class="production-cart">
-      <div class="cart-heading"><div><p class="eyebrow">CURRENT BILL</p><h2>当前账单</h2></div><span class="cart-count">{{ cartCount }}</span></div>
-      <p class="cart-rule">确认前不区分渠道 · 商户端仅可创建堂食或现场外带</p>
+      <div class="cart-heading"><div><p class="eyebrow">CURRENT BILL</p><h2>当前账单草稿</h2></div><span class="cart-count">{{ cartCount }}</span></div>
+      <p class="cart-rule">商品变化后覆盖草稿明细，并使旧报价失效</p>
       <div class="cart-lines">
         <article v-for="line in cartLines" :key="keyOf(line.product)" class="cart-line">
           <div><strong>{{ line.product.name }}</strong><small>{{ money(line.product.price) }} / 份</small></div>
@@ -166,8 +165,8 @@ onMounted(loadProducts);
         <el-empty v-if="!cartLines.length" :image-size="72" description="点击左侧商品加入账单"/>
       </div>
       <div class="cart-bottom">
-        <div class="cart-total"><span>商品合计</span><strong>{{ money(cartTotal) }}</strong></div>
-        <el-button type="primary" size="large" :loading="saving" :disabled="!cartLines.length" @click="openQuote">选择履约并报价</el-button>
+        <div class="cart-total"><span>商品小计</span><strong>{{ money(cartTotal) }}</strong></div>
+        <el-button type="primary" size="large" :loading="saving" :disabled="!cartLines.length" @click="openQuote">去结算 · 选择堂食或外带</el-button>
       </div>
     </aside>
 

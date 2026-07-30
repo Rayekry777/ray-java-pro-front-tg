@@ -72,10 +72,10 @@ onMounted(load);
 
 <template>
   <div class="page bill-detail-page" v-loading="loading">
-    <div class="page-title compact">
-      <div><p class="eyebrow">BILL WORKSPACE</p><h1>{{ bill?.billNo || "账单详情" }}</h1><p>{{ modeLabel }} · 服务端动作许可驱动</p></div>
+    <header class="page-head">
+      <div><p class="eyebrow">BILL · {{ bill?.billNo || "LOADING" }}</p><h1>统一账单详情</h1><p>下一动作同时受服务端 allowedActions、账单状态和岗位权限约束。</p></div>
       <router-link class="button secondary" to="/bills">返回账单中心</router-link>
-    </div>
+    </header>
     <div v-if="readonly" class="readonly-banner">历史兼容账单只读展示，不提供收款、取消或履约动作。</div>
     <section v-if="bill" class="bill-status-rail">
       <div class="status-step done">01<br><strong>创建</strong></div>

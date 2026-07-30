@@ -118,10 +118,10 @@ onMounted(load);
 
 <template>
   <div class="page access-page" v-loading="loading">
-    <div class="page-title compact">
+    <header class="page-head">
       <div><p class="eyebrow">EMPLOYEE ACCESS</p><h1>员工与权限</h1><p>岗位决定能力，门店授权决定数据范围；最后负责人保护由服务端执行。</p></div>
       <el-button v-if="activeTab==='roles'" type="primary" @click="openRole()">新建自定义角色</el-button>
-    </div>
+    </header>
     <el-tabs v-model="activeTab" class="access-tabs">
       <el-tab-pane label="员工授权" name="employees">
         <section class="form-grid access-grid">

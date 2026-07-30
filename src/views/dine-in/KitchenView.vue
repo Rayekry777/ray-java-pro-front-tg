@@ -37,10 +37,10 @@ onMounted(load);
 
 <template>
   <div class="page kitchen-page">
-    <div class="page-title compact">
-      <div><p class="eyebrow">KITCHEN PASS</p><h1>后厨出餐</h1><p>统一处理堂食与现场外带制作；金额和顾客隐私不进入后厨。</p></div>
+    <header class="page-head">
+      <div><p class="eyebrow">KITCHEN DISPLAY</p><h1>后厨出餐中心</h1><p>只显示制作所需信息，不暴露顾客隐私与账单金额。</p></div>
       <el-button @click="load">刷新看板</el-button>
-    </div>
+    </header>
     <section class="kitchen-toolbar panel">
       <el-radio-group v-model="active"><el-radio-button value="ALL">全部</el-radio-button><el-radio-button value="PENDING">待制作</el-radio-button><el-radio-button value="COOKING">制作中</el-radio-button><el-radio-button value="READY">制作完成</el-radio-button></el-radio-group>
       <span>制作完成后：堂食进入前厅上菜，现场外带进入待交付</span>

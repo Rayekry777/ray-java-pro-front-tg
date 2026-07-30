@@ -24,6 +24,12 @@ const metrics = computed(() => [
   ["营业账单", live.value?.openBills || 0, "单", "/bills", "bill:read"],
   ["待接自取", live.value?.pendingPickupOrders || 0, "单", "/pickup/orders", "pickup-order:read"]
 ]);
+const priorityTasks = computed(() => [
+  { title: "后厨待制作", description: "进入后厨出餐中心推进制作状态", value: live.value?.pendingKitchenItems || 0, unit: "项", path: "/kitchen", permission: "kitchen-item:read", mode: "takeout" },
+  { title: "前厅待上菜", description: "制作完成后由前厅确认上桌", value: live.value?.readyToServeItems || 0, unit: "项", path: "/serve-tasks", permission: "serve-task:read", mode: "dine-in" },
+  { title: "营业中账单", description: "查看堂食、外带与历史自取账单", value: live.value?.openBills || 0, unit: "单", path: "/bills", permission: "bill:read", mode: "dine-in" },
+  { title: "历史自取待接单", description: "兼容小程序旧自取订单处理", value: live.value?.pendingPickupOrders || 0, unit: "单", path: "/pickup/orders", permission: "pickup-order:read", mode: "pickup" }
+].filter(item => hasPermission(item.permission)));
 async function load() {
   loading.value = true; loadError.value = "";
   try { live.value = await operationsApi.live(); }
@@ -35,34 +41,37 @@ onMounted(load);
 
 <template>
   <div class="page production-overview" v-loading="loading">
-    <div class="page-title compact">
-      <div><p class="eyebrow">LIVE OPERATIONS</p><h1>今天，先处理下一件事。</h1><p>{{ roleLabel }} · {{ session?.activeStore.name }}</p></div>
+    <header class="page-head">
+      <div><p class="eyebrow">RAY · {{ roleLabel }}</p><h1>经营总览</h1><p>使用营业聚合快照安排当前任务与异常优先级。</p></div>
       <div class="title-actions"><span class="aggregate-freshness"><i></i>营业聚合 · {{ freshness }} 更新</span><el-button @click="load">刷新任务</el-button></div>
-    </div>
+    </header>
     <el-alert v-if="loadError" title="营业聚合加载失败" :description="loadError" type="error" show-icon :closable="false"><template #default><el-button link type="primary" @click="load">重试</el-button></template></el-alert>
     <section class="stats overview-stats">
       <router-link v-for="[label,value,unit,path,permission] in metrics" v-show="hasPermission(String(permission))" :key="label" class="stat" :to="String(path)">
         <span>{{ label }}</span><strong>{{ value }}<em>{{ unit }}</em></strong><small>查看当前任务 →</small>
       </router-link>
     </section>
-    <section class="overview-work-grid">
-      <article v-if="hasPermission('bill:create')" class="panel hero-task">
-        <div><p class="eyebrow">PRIMARY ACTION</p><h2>统一开单</h2><p>先完成选菜，最后选择堂食或现场外带，再由服务端给出最终报价。</p></div>
-        <router-link class="button primary" to="/operations">开始选菜</router-link>
-      </article>
-      <article v-if="hasPermission('kitchen-item:read')" class="panel task-card" data-accent="warning">
-        <span>后厨制作</span><strong>{{ live?.pendingKitchenItems || 0 }}</strong><p>项商品等待开始制作</p><router-link to="/kitchen">进入后厨 →</router-link>
-      </article>
-      <article v-if="hasPermission('serve-task:read')" class="panel task-card" data-accent="success">
-        <span>前厅上菜</span><strong>{{ live?.readyToServeItems || 0 }}</strong><p>项已完成制作，等待上桌</p><router-link to="/serve-tasks">处理上菜 →</router-link>
-      </article>
-      <article v-if="hasPermission('pickup-order:read')" class="panel task-card" data-accent="info">
-        <span>历史自取兼容</span><strong>{{ live?.pendingPickupOrders || 0 }}</strong><p>单小程序自取等待处理</p><router-link to="/pickup/orders">查看自取 →</router-link>
-      </article>
-    </section>
-    <section class="panel workflow-panel">
-      <div><p class="eyebrow">SERVICE FLOW</p><h2>营业闭环</h2></div>
-      <ol><li><b>01</b><span>选菜</span></li><li><b>02</b><span>报价确认</span></li><li><b>03</b><span>制作</span></li><li><b>04</b><span>上菜 / 交付</span></li><li><b>05</b><span>收款 / 清台</span></li></ol>
-    </section>
+    <div class="split">
+      <section class="panel task-list">
+        <div class="section-title"><div><p class="eyebrow">NOW</p><h2>当前优先任务</h2></div><router-link v-if="hasPermission('serve-task:read')" to="/serve-tasks">查看全部 →</router-link></div>
+        <div class="tasks">
+          <router-link v-for="item in priorityTasks" :key="item.path" class="task" :data-mode="item.mode" :to="item.path">
+            <i class="task-bar"></i>
+            <div><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
+            <strong class="timer">{{ item.value }} {{ item.unit }}</strong>
+          </router-link>
+          <el-empty v-if="!priorityTasks.length" description="当前岗位暂无聚合任务入口"/>
+        </div>
+      </section>
+      <aside class="panel activity">
+        <div class="section-title"><h2>营业快照</h2><span class="tag ok">聚合已更新</span></div>
+        <div class="timeline">
+          <div class="timeline-row"><b>{{ freshness }}</b><i></i><span>营业聚合数据已刷新</span></div>
+          <div class="timeline-row"><b>v{{ live?.version || 0 }}</b><i></i><span>当前聚合快照版本</span></div>
+          <div class="timeline-row"><b>{{ live?.occupiedTables || 0 }} 桌</b><i></i><span>{{ session?.activeStore.name }} 当前占用桌台</span></div>
+        </div>
+        <router-link v-if="hasPermission('bill:create')" class="button primary overview-order-entry" to="/operations">进入统一营业台</router-link>
+      </aside>
+    </div>
   </div>
 </template>

@@ -39,9 +39,9 @@ async function submit() {
 
 <template>
   <div class="page account-page">
-    <div class="page-title compact">
+    <header class="page-head">
       <div><p class="eyebrow">ACCOUNT SECURITY</p><h1>账号安全</h1><p>修改本人密码后，旧会话将失效并返回登录页。</p></div>
-    </div>
+    </header>
     <section class="account-grid">
       <article class="panel account-summary">
         <span class="account-avatar">{{ merchantSession.employee.value?.name.slice(0, 1) }}</span>

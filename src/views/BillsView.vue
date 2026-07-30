@@ -44,10 +44,10 @@ onMounted(load);
 
 <template>
   <div class="page bills-page">
-    <div class="page-title compact">
-      <div><p class="eyebrow">BILL CENTER</p><h1>账单中心</h1><p>统一查询堂食、现场外带及迁移后的账单状态。</p></div>
+    <header class="page-head">
+      <div><p class="eyebrow">BILL CENTER</p><h1>统一账单中心</h1><p>统一账单与历史只读来源在同一列表中按服务方式和状态查询。</p></div>
       <router-link v-if="$route.meta && true" class="button primary" to="/operations">＋ 新建账单</router-link>
-    </div>
+    </header>
     <section class="bill-mode-strip">
       <button :class="{active:query.serviceMode===''}" @click="query.serviceMode='';query.page=1;load()">全部</button>
       <button v-for="(label,mode) in modeMap" :key="mode" :class="{active:query.serviceMode===mode}" @click="query.serviceMode=mode as BillServiceMode;query.page=1;load()">{{ label }}</button>

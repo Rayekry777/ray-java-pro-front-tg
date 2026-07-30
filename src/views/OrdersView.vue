@@ -27,7 +27,7 @@ async function act(row:Order,type:"confirm"|"reject"|"cancel"|"ready"|"collected
 onMounted(load);
 </script>
 <template><div class="page">
-  <div class="page-title compact"><div><p class="eyebrow">PICKUP COMPATIBILITY</p><h1>自取任务</h1><p>处理小程序历史 `TAKEAWAY` 自取兼容订单；现场外带使用统一账单。</p></div><el-tag type="warning" effect="plain">兼容接口 /admin/order/**</el-tag></div>
+  <header class="page-head"><div><p class="eyebrow">PICKUP COMPATIBILITY</p><h1>自取任务</h1><p>处理小程序历史 `TAKEAWAY` 自取兼容订单；现场外带使用统一账单。</p></div><el-tag type="warning" effect="plain">兼容接口 /admin/order/**</el-tag></header>
   <section class="order-summary"><article><span>待接单</span><strong>{{statistics.toBeConfirmed}}</strong></article><article><span>备餐中</span><strong>{{statistics.preparing}}</strong></article><article><span>待取餐</span><strong>{{statistics.readyForPickup}}</strong></article></section>
   <section class="panel filter-bar"><el-input v-model="query.number" placeholder="订单号" clearable/><el-input v-model="query.pickupPhone" placeholder="取餐手机号" clearable/><el-select v-model="query.status" placeholder="订单状态" clearable><el-option v-for="(v,k) in statusMap" :key="k" :label="v[0]" :value="String(k)"/></el-select><el-button type="primary" @click="query.page=1;load()">查询</el-button></section>
   <section class="panel table-panel">

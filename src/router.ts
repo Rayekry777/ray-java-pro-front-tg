@@ -22,6 +22,7 @@ import KitchenView from "@/views/dine-in/KitchenView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior: () => ({ top: 0 }),
   routes: [
     { path: "/login", component: LoginView, meta: { public: true } },
     {

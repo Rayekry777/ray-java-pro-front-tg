@@ -25,7 +25,7 @@ async function act(row:DineInOrder,type:"kitchen"|"pay"|"clear"|"cancel"){action
 onMounted(async()=>{await load();const id=Number(route.query.orderId);if(id)showDetail(id)});
 </script>
 <template><div class="page">
-  <div class="page-title compact"><div><p class="eyebrow">DINE-IN ORDERS</p><h1>堂食订单</h1><p>管理从开台、下厨、结账到清台的完整堂食流程。</p></div><router-link class="button secondary" to="/dine-in/tables">返回桌台</router-link></div>
+  <header class="page-head"><div><p class="eyebrow">DINE-IN ORDERS</p><h1>堂食订单</h1><p>管理从开台、下厨、结账到清台的完整堂食流程。</p></div><router-link class="button secondary" to="/dine-in/tables">返回桌台</router-link></header>
   <section class="panel filter-bar"><el-input v-model="query.orderNo" placeholder="订单号" clearable/><el-select v-model="query.status" placeholder="订单状态" clearable><el-option v-for="(v,k) in statusMap" :key="k" :label="v[0]" :value="String(k)"/></el-select><el-button type="primary" @click="query.page=1;load()">查询</el-button></section>
   <section class="panel table-panel"><el-table :data="rows" v-loading="loading" empty-text="暂无堂食订单">
     <el-table-column prop="orderNo" label="订单号" min-width="150"/><el-table-column prop="tableName" label="桌台" width="100"/><el-table-column prop="guestCount" label="人数" width="75"/><el-table-column label="状态" width="105"><template #default="{row}"><el-tag :type="statusMap[row.status]?.[1]||'info'">{{statusMap[row.status]?.[0]||row.status}}</el-tag></template></el-table-column><el-table-column label="应付金额" width="110"><template #default="{row}">¥{{row.payableAmount.toFixed(2)}}</template></el-table-column><el-table-column prop="openedAt" label="开台时间" width="170"/>
