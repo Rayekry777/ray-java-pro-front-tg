@@ -4,6 +4,14 @@ const root = __dirname;
 const routes = JSON.parse(fs.readFileSync(path.join(root, "routes.json"), "utf8")).routes;
 const files = new Set(routes.map(route => route.file));
 let failed = false;
+const htmlFiles = fs.readdirSync(root)
+  .filter(file => file.endsWith(".html") && file !== "pencil-export.html");
+for (const file of htmlFiles) {
+  if (!files.has(file)) {
+    console.error(`路由清单存在孤儿页面: ${file}`);
+    failed = true;
+  }
+}
 for (const file of files) {
   const full = path.join(root, file);
   if (!fs.existsSync(full)) {
@@ -22,6 +30,10 @@ for (const file of files) {
     console.error(`${file} 缺少中文语言声明`);
     failed = true;
   }
+  if (!["login.html", "404.html"].includes(file) && !/data-shell/.test(html)) {
+    console.error(`${file} 未使用共享站点外壳`);
+    failed = true;
+  }
 }
 for (const asset of ["site.css", "tokens.css", "site.js"]) {
   if (!fs.existsSync(path.join(root, asset))) {
@@ -30,5 +42,4 @@ for (const asset of ["site.css", "tokens.css", "site.js"]) {
   }
 }
 if (failed) process.exit(1);
-console.log(`通过：${files.size} 个路由文件、站内链接与共享资源检查完成。`);
-
+console.log(`通过：${files.size} 个路由文件、无孤儿页面、站内链接与共享资源检查完成。`);

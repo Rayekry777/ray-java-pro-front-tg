@@ -2,12 +2,16 @@
 <body data-page="states"><div class="app" data-shell></div><template data-content><main class="page">
   <header class="page-head reveal"><div><p class="eyebrow">STATE MATRIX</p><h1>权限与异常状态</h1><p>关键路径在失败、过期和并发情况下仍有安全出口。</p></div></header>
   <section class="state-grid">
-    <article class="panel state-card reveal"><span class="tag warn">403</span><h3>无权访问此页面</h3><p class="muted">当前岗位缺少 bill:view 权限，菜单入口已同步隐藏。</p><a class="button" href="index.html">返回岗位首页</a></article>
+    <article class="panel state-card reveal"><span class="tag warn">403</span><h3>无权访问此页面</h3><p class="muted">当前岗位缺少 bill:read 权限，菜单入口已同步隐藏。</p><a class="button" href="index.html">返回岗位首页</a></article>
     <article class="panel state-card reveal"><span class="tag warn">SESSION</span><h3>会话已过期</h3><p class="muted">为保护门店数据，请重新登录并初始化门店上下文。</p><a class="button primary" href="login.html">重新登录</a></article>
     <article class="panel state-card reveal"><span class="tag warn">409</span><h3>报价已经变化</h3><p class="muted">优惠或商品状态发生变化，请查看差异后重新报价。</p><a class="button" href="quote.html">重新报价</a></article>
     <article class="panel state-card reveal"><span class="tag">STALE</span><h3>数据可能已过期</h3><p class="muted">该任务在另一终端已处理，当前视图需要刷新。</p><button data-demo="本地演示数据已刷新。">刷新状态</button></article>
     <article class="panel state-card reveal"><span class="tag ok">EMPTY</span><h3>当前没有制作任务</h3><p class="muted">新任务到达时将通过声音和任务高亮提醒。</p><a class="button" href="kitchen.html">返回后厨</a></article>
     <article class="panel state-card reveal"><span class="tag warn">OFFLINE</span><h3>连接暂时中断</h3><p class="muted">不要重复提交；恢复连接后将自动校验结果。</p><button data-demo="网络重试仅为动效演示。">重试连接</button></article>
+    <article class="panel state-card reveal"><span class="tag warn">PAYMENT IDEMPOTENCY</span><h3>支付请求已被占用</h3><p class="muted">该幂等键属于另一张账单，请刷新结果，不要重复扣款。</p><a class="button" href="bill-detail.html">查看账单</a></article>
+    <article class="panel state-card reveal"><span class="tag warn">TABLE CONFLICT</span><h3>桌台刚被占用</h3><p class="muted">报价期间桌台状态变化，请返回履约选择并重新报价。</p><a class="button" href="quote.html">重新选择桌台</a></article>
+    <article class="panel state-card reveal"><span class="tag warn">LAST OWNER</span><h3>不能停用最后负责人</h3><p class="muted">请先为另一名有效员工授予 TENANT_OWNER。</p><a class="button" href="employees.html">返回员工权限</a></article>
+    <article class="panel state-card reveal"><span class="tag warn">NO STORE</span><h3>没有可访问门店</h3><p class="muted">当前员工的门店授权已撤销，请联系租户负责人。</p><a class="button primary" href="login.html">退出登录</a></article>
+    <article class="panel state-card reveal"><span class="tag">READ ONLY</span><h3>历史账单只读</h3><p class="muted">历史来源不返回 allowedActions，不能在统一账单中修改。</p><a class="button" href="bill-detail.html">查看历史场景</a></article>
   </section>
 </main></template><script src="site.js"></script></body></html>
-

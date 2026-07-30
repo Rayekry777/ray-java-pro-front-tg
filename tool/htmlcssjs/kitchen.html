@@ -1,10 +1,11 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>后厨出餐中心 · Ray</title><link rel="stylesheet" href="site.css"></head>
 <body data-page="kitchen"><div class="app" data-shell></div><template data-content><main class="page">
   <header class="page-head reveal"><div><p class="eyebrow">KITCHEN DISPLAY</p><h1>后厨出餐中心</h1><p>只显示制作所需信息，不暴露顾客隐私与账单金额。</p></div><button data-demo="声音提醒已在设计演示中切换。">声音提醒：开</button></header>
+  <div class="api-strip reveal"><span class="api-code">GET /admin/bills/kitchen/items</span><span class="api-code write">item start / ready</span><span class="api-code compat">旧自取继续使用 /admin/order/**</span></div>
   <section class="kanban">
     <div class="column reveal"><div class="column-head"><strong>待制作</strong><span class="tag warn">6</span></div>
       <article class="ticket"><span class="timer">08:24</span><p class="eyebrow">A08 桌 · 堂食</p><h3>毛血旺 ×1</h3><p class="muted">中辣 · 不要香菜</p><button data-ticket-action>开始制作</button></article>
-      <article class="ticket"><span class="timer">05:12</span><p class="eyebrow">自取 082</p><h3>宫保鸡丁 ×1</h3><p class="muted">标准份</p><button data-ticket-action>开始制作</button></article>
+      <article class="ticket"><span class="timer">05:12</span><p class="eyebrow">自取 082 · 兼容队列</p><h3>宫保鸡丁 ×1</h3><p class="muted">旧 TAKEAWAY · 标准份</p><button data-ticket-action>开始制作</button></article>
     </div>
     <div class="column reveal"><div class="column-head"><strong>制作中</strong><span class="tag">11</span></div>
       <article class="ticket"><span class="timer">06:18</span><p class="eyebrow">现场外带 016</p><h3>酸菜鱼 ×1</h3><p class="muted">微辣 · 单独打包</p><button data-ticket-action>制作完成</button></article>
@@ -12,8 +13,7 @@
     </div>
     <div class="column reveal"><div class="column-head"><strong>制作完成</strong><span class="tag ok">4</span></div>
       <article class="ticket"><p class="eyebrow">A08 桌 · 堂食</p><h3>米饭 ×2</h3><p class="muted">等待前厅确认上桌</p><span class="tag ok">已通知前厅</span></article>
-      <article class="ticket"><p class="eyebrow">自取 076</p><h3>番茄炒蛋 ×1</h3><p class="muted">等待合单打包</p><span class="tag ok">制作完成</span></article>
+      <article class="ticket"><p class="eyebrow">自取 076 · 兼容队列</p><h3>番茄炒蛋 ×1</h3><p class="muted">等待合单打包</p><span class="tag ok">制作完成</span></article>
     </div>
   </section>
 </main></template><script src="site.js"></script></body></html>
-

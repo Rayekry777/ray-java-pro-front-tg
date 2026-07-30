@@ -1,9 +1,9 @@
-# Ray 餐厅运营台 Web 改版设计契约 V2
+# Ray 餐厅运营台 Web 改版设计契约 V3
 
 > 本契约锁定岗位权限、页面范围、业务闭环、接口边界和后续视觉验收标准。当前仅完成契约阶段，不代表生产功能已经实现。
 
 ```yaml
-version: 2
+version: 3
 reviewStatus: accepted
 platform: web
 projectRoot: D:\JavaPro\ctjava\ray-java-pro-front-tg
@@ -11,10 +11,10 @@ visualRisk: high
 authorization:
   aiAssets: not_applicable
   penCreation: approved
-  visualDecision: pending
+  visualDecision: directionA_accepted
   tokenReview: accepted
   pencilReview: accepted
-  labCreation: approved
+  labCreation: completed
   labReview: pending
   productionWrite: pending
 tokens:
@@ -39,6 +39,16 @@ pencil:
   states: Uhqhz
   responsive: HSlRM
   status: accepted
+lab:
+  path: D:\JavaPro\ctjava\ray-java-pro-front-tg\tool\htmlcssjs
+  routes: 16
+  sharedShell: ready
+  tokenPage: preserved
+  interactions: ready
+  motion: preserved
+  fidelity: verified
+  reviewStatus: pending
+  status: ready_for_review
 ```
 
 ## 1. 范围与证据
@@ -67,9 +77,11 @@ pencil:
   - 未经单独批准的生产代码、数据库迁移、Pencil 或 HTML 实验室写入。
 - 工程、接口与产品证据：
   - 目标工程为 Vue 3.5、Vite 7、TypeScript 5.8、Element Plus 2.10。
-  - 后端已具备商户 JWT、`tenant_id + store_id` 隔离、`tenant_role`、`employee_role`、`tenant_role_permission`、`employee_store`、`@RequirePermission`、403 和审计链。
+  - 后端已具备商户 JWT、`tenant_id + store_id` 隔离、动作级权限、五类系统岗位、员工角色和门店授权、403 与审计链。
+  - 所有商户 Controller 同时声明 `/admin/**` 和 `/api/merchant/v1/**` 路由；实验室继续以 `/admin/**` 表达业务契约，并在接口覆盖说明中记录版本化别名。
   - 当前前端只按 Token 判断登录，登录会话不包含角色、权限和门店上下文；侧栏和路由对所有员工固定展示。
-  - 当前堂食流程被拆分为桌台、订单和后厨三个页面；现有 `TAKEAWAY` 实际承载到店自取，尚未区分现场外带和小程序自取；核心营业页面主要依赖手动刷新。
+  - 后端已提供统一账单草稿、报价、确认、查询、收款、取消、清台、制作、上菜和现场外带交付；旧堂食与 `TAKEAWAY/DELIVERY` 数据通过历史账单只读门面兼容。
+  - 当前实验室仍把多项已实现接口标成“尚未实现”，且缺少统一账单详情、账号安全、角色权限目录、门店营业设置、商品管理和历史只读账单的产品空间。
 - 参考 UI、截图或 `.pen`：
   - 产品方法参考美团餐饮系统公开的一站式前厅、生产、收银、外带和经营管理思路，不复制其专有界面。
   - `tool/production-dashboard.png` 和 `tool/htmlcssjs/` 仅作为既有工程证据，不是本次改版视觉真源。
@@ -112,35 +124,58 @@ pencil:
 | 能力 | HTTP 方法 + 路径 | 状态 | 设计与网络动作 |
 |---|---|---|---|
 | 员工登录 | `POST /admin/employee/login` | implemented | 增加租户编码输入；成功后只保存 Token，再初始化会话 |
-| 当前会话 | `GET /admin/session/me` | unimplemented | 返回员工、租户、当前门店、授权门店、角色、权限和建议工作台；未实现前不得伪造权限 |
+| 当前会话 | `GET /admin/session/me` | implemented | 返回员工、租户、当前门店、授权门店、角色、权限和建议工作台；应用外壳和岗位入口以此为准 |
 | 授权门店 | `GET /admin/session/stores` | implemented | 门店切换器的真实数据源 |
 | 切换门店 | `POST /admin/session/switch-store` | implemented | 成功后替换 Token，清空门店级页面缓存并重新初始化 |
-| 角色维护 | `/admin/rbac/roles` | implemented | 现有粗粒度角色接口；后续接入权限目录和系统预置角色 |
-| 权限目录 | `GET /admin/rbac/permissions` | unimplemented | 角色编辑器只允许从服务端目录选择权限 |
+| 修改本人密码 | `PUT /admin/session/password` | implemented | 账号安全抽屉；成功后提示重新登录 |
+| 退出登录 | `POST /admin/employee/logout` | implemented | 清除服务端会话版本并返回登录页 |
+| 角色维护 | `GET/POST /admin/rbac/roles`、`PUT/DELETE /admin/rbac/roles/{id}` | implemented | 系统角色只读，自定义角色按权限目录配置 |
+| 权限目录 | `GET /admin/rbac/permissions` | implemented | 角色编辑器只允许从服务端目录选择权限 |
 | 员工角色 | `/admin/rbac/employees/{employeeId}/roles` | implemented | 员工编辑流程中的角色步骤 |
-| 员工门店授权 | `/admin/rbac/employees/{employeeId}/stores` | unimplemented | 员工编辑流程中的门店步骤 |
+| 员工门店授权 | `/admin/rbac/employees/{employeeId}/stores` | implemented | 员工编辑流程中的门店步骤 |
 | 员工管理 | `/admin/employee/**` | implemented | 需要与角色和门店配置整合；经理只能管理普通员工 |
-| 营业聚合任务 | `GET /admin/operations/live` | unimplemented | 营业台实时任务、过期时间和数据版本真源 |
-| 创建账单草稿 | `POST /admin/bills/drafts` | unimplemented | 开始选菜时创建，不提前要求账单类型 |
-| 编辑草稿菜品 | `PUT /admin/bills/drafts/{id}/items` | unimplemented | 统一维护菜品、口味、数量和备注 |
-| 按履约方式报价 | `POST /admin/bills/drafts/{id}/quote` | unimplemented | 最后选择 `DINE_IN/TAKEOUT` 后重新计算服务费、打包费、优惠和应付金额 |
-| 确认账单 | `POST /admin/bills/drafts/{id}/confirm` | unimplemented | 使用报价版本幂等确认；价格或草稿变化返回 409 |
-| 统一账单查询 | `GET /admin/bills`、`GET /admin/bills/{id}` | unimplemented | 确认后按堂食、外带、自取筛选；返回服务端动作许可 |
+| 营业聚合任务 | `GET /admin/operations/live` | implemented | 营业台任务数量、更新时间和聚合状态真源 |
+| 创建账单草稿 | `POST /admin/bills/drafts` | implemented | 开始选菜时创建，不提前要求账单类型 |
+| 编辑草稿菜品 | `PUT /admin/bills/drafts/{id}/items` | implemented | 统一维护菜品或套餐、数量和备注 |
+| 按履约方式报价 | `POST /admin/bills/drafts/{id}/quote` | implemented | 最后选择 `DINE_IN/TAKEOUT` 后报价；堂食填写桌台和人数 |
+| 确认账单 | `POST /admin/bills/drafts/{id}/confirm` | implemented | 使用 `quoteId` 和幂等键确认；价格或草稿变化进入 409 状态 |
+| 统一账单查询 | `GET /admin/bills`、`GET /admin/bills/{id}` | implemented | 按服务方式和状态筛选；响应包含服务端 `allowedActions` |
+| 历史账单详情 | `GET /admin/bills/legacy/{sourceType}/{sourceId}` | implemented | `LEGACY_DINE_IN/LEGACY_PICKUP` 只读详情，无可执行动作 |
+| 统一账单收款 | `POST /admin/bills/{id}/checkout` | implemented | 独立支付方式、金额和幂等键；支付与履约状态分开 |
+| 统一账单取消 | `POST /admin/bills/{id}/cancel` | implemented | 仅在 `allowedActions` 包含取消时显示，必须填写原因 |
+| 统一堂食清台 | `POST /admin/bills/{id}/clear-table` | implemented | 仅已支付且全部上桌的堂食账单可执行 |
+| 统一外带交付 | `PUT /admin/bills/{id}/handover` | implemented | 仅已支付且制作完成的 `TAKEOUT` 可交付 |
 | 堂食区域与桌台 | `GET /admin/dine-in/areas`、`GET /admin/dine-in/tables` | implemented | 营业台桌台区真实数据 |
 | 开台 | `POST /admin/dine-in/tables/{tableId}/open` | implemented | 在当前桌上下文继续点餐，不跳列表页 |
 | 堂食订单与明细 | `GET /admin/dine-in/orders`、`GET /admin/dine-in/orders/{id}` | implemented | 活跃订单在营业台处理，分页页只承担历史和异常查询 |
 | 加菜与提交后厨 | `POST /admin/dine-in/orders/{id}/items`、`POST /admin/dine-in/orders/{id}/submit-kitchen` | implemented | 后加菜必须持续显示“下厨 N 项”，不能按聚合状态隐藏 |
 | 堂食结账与清台 | `POST /admin/dine-in/orders/{id}/checkout-preview`、`pay`、`clear-table` | implemented | 结账前展示未下厨/未上菜警告；支付后显示“待清台” |
-| 堂食动作许可 | 订单详情 `allowedActions`、未下厨/未上菜计数 | unimplemented | 所有主按钮由服务端动作许可和前端权限交集决定 |
+| 堂食动作许可 | 订单详情 `allowedActions`、未下厨/未上菜计数 | implemented | 所有主按钮由服务端动作许可和前端权限交集决定 |
 | 后厨制作 | `/admin/dine-in/kitchen/items/**` | implemented | 后厨只推进待制作、制作中和制作完成 |
-| 前厅上菜任务 | `/admin/serve/tasks/**` | unimplemented | 制作完成后由前厅确认上桌 |
+| 统一账单后厨 | `GET /admin/bills/kitchen/items`、`PUT /admin/bills/{billId}/items/{itemId}/start|ready|serve` | implemented | 堂食和现场外带统一制作，堂食完成后进入上菜 |
+| 前厅上菜任务 | `GET /admin/serve/tasks`、`PUT /admin/serve/tasks/{id}/confirm` | implemented | 制作完成后由前厅确认上桌 |
 | 现有自取订单 | `/admin/order/**` | implemented | 作为历史 `TAKEAWAY` 自取兼容接口；迁移完成前保持可用 |
-| 现场外带账单 | 统一账单中的 `serviceMode=TAKEOUT` | unimplemented | 不占桌台，不要求顾客账号、预约时间或小程序取餐身份 |
-| 自取账单处理 | 统一账单中的 `serviceMode=PICKUP` | unimplemented | 运营台接单、备餐、待取餐和核码取走，不在运营台新建 |
-| 三类账单统一后厨任务 | 堂食、外带和自取明细接入统一制作队列 | unimplemented | 后厨按桌号、现场流水号或取餐码识别来源 |
+| 现场外带账单 | 统一账单中的 `serviceMode=TAKEOUT` | implemented | 不占桌台，不要求顾客账号、预约时间或小程序取餐身份 |
+| 自取账单处理 | 旧 `/admin/order/**` 与统一账单历史门面 | implemented | 旧 `TAKEAWAY` 按 `PICKUP` 展示；接单、拒单、备妥、取走继续走兼容接口 |
+| 三类账单统一后厨任务 | 新堂食和外带走 `/admin/bills/kitchen/**`；旧自取走兼容接口 | developing | 实验室明确双轨来源，不伪造尚未提供的小程序统一账单写接口 |
 | 菜品与分类 | `/admin/dish/**`、`/admin/category/**` | implemented | 有权限者真实调用，无权限者不显示入口 |
-| 套餐 | `/admin/setmeal/**` | developing | 保留现有页面边界，按后端最终契约接入 |
-| 报表 | `/admin/report/**` | implemented | 租户负责人和经理可见；导出单独权限控制 |
+| 套餐 | `/admin/setmeal/**` | implemented | 与分类、菜品共同归入商品管理 |
+| 门店营业设置 | `/admin/shop/status`、`/admin/shop/business-settings`、营业时段与模式更新接口 | implemented | 门店设置页覆盖手动开关、营业模式和周营业时段 |
+| 报表 | `/admin/report/**` | unknown | 当前 Controller 扫描未取得路由证据；入口保留为禁用“待接口确认”，不发请求 |
+
+### 2.1 V3 实验室接口预留修订
+
+本轮不改变已接受的 Pencil 方向、令牌、色彩、密度和响应式规则，只修订实验室的信息架构、页面状态和接口标注：
+
+1. 应用外壳增加会话菜单：查看当前员工与岗位、切换授权门店、修改本人密码、退出登录。
+2. 经营总览改用 `operations/live` 语义，不再写“实时通道已连接”，明确当前实现为刷新式聚合。
+3. 统一开单完整表达 `draft → items → quote → confirm`，报价页展示 `quoteId/version/expiresAt` 和重复确认。
+4. 新增统一账单详情工作区，覆盖 `allowedActions`、收款、取消、清台、上菜、外带交付及历史只读来源。
+5. 后厨页面区分统一账单制作队列与旧自取兼容任务，避免宣称三类新账单已完全统一写入。
+6. 员工权限页补齐固定权限目录、五类系统岗位只读状态、员工角色和门店授权保存。
+7. 新增商品管理、门店营业设置和账号安全页面；报表仅保留禁用入口。
+8. 新增“接口覆盖”评审页，逐项标注已实现、开发中、未知及对应实验页面，不发起任何网络请求。
+9. 更新状态矩阵：401、403、409 报价过期、支付幂等冲突、桌台冲突、最后负责人保护、无授权门店和历史只读。
 
 ## 3. 页面、流程与状态
 
@@ -157,9 +192,14 @@ pencil:
 | 前厅服务任务 | 确认制作完成的菜品上桌 | 营业台提醒 → 服务任务 → 当前桌 | 1440/1366/1024 | 待上菜、超时、已被他人处理、订单已结账 |
 | 后厨出餐中心 | 推进制作状态 | 岗位首页/侧栏 → 制作完成 | 1440/1366/1024 | 待制作、制作中、制作完成、空、过期、冲突、声音关闭 |
 | 账单中心 | 查询已确认账单和异常 | 侧栏 → 详情 → 返回筛选结果 | 1440/1366/1024 | 全部/堂食/外带/自取、加载、空、错误、筛选、分页、未授权 |
+| 统一账单详情 | 根据 `allowedActions` 完成下一动作 | 账单中心/桌台 → 详情 → 收款/取消/清台/交付 | 1440/1366/1024 | 堂食、外带、历史只读、支付幂等、桌台冲突、动作不可用 |
 | 员工管理 | 创建员工并分配岗位和门店 | 侧栏 → 员工表单 → 保存 | 1440/1366/1024 | 基本资料、角色、门店、越权禁用、最后负责人保护 |
 | 角色权限 | 查看系统角色和自定义角色 | 侧栏 → 角色详情 → 保存 | 1440/1366/1024 | 权限目录加载、系统角色只读、越权、冲突 |
-| 商品与报表 | 完成授权范围内的管理工作 | 侧栏 → 现有业务页 | 1440/1366/1024 | 按现有真实接口和权限覆盖 |
+| 商品管理 | 管理分类、菜品、套餐和起售状态 | 侧栏 → 商品列表/编辑 | 1440/1366/1024 | 加载、空、搜索、停售、关联冲突、无权限 |
+| 门店营业设置 | 管理营业状态、模式和周时段 | 会话菜单/侧栏 → 门店设置 | 1440/1366/1024 | 自动、手动营业、手动打烊、跨日时段、保存冲突 |
+| 账号安全 | 修改本人密码并退出所有旧会话 | 会话菜单 → 修改密码 → 登录 | 全尺寸 | 当前密码错误、新密码校验、提交、成功退出 |
+| 接口覆盖 | 评审页面与当前 Controller 路由的预留关系 | 设计系统/状态矩阵 → 覆盖清单 | 1440/1024 | 已实现、开发中、未知、兼容只读 |
+| 报表占位 | 说明接口证据不足 | 侧栏禁用入口 | 全尺寸 | 未知、不可点击、不发请求 |
 | 403 无权限 | 明确解释并安全返回 | 路由守卫/HTTP 403 → 岗位首页 | 全尺寸 | 缺少入口权限、动作权限变化、门店权限撤销 |
 
 统一开单主流程：
@@ -238,7 +278,7 @@ pencil:
 ## 7. 用户审批
 
 ```markdown
-- [ ] 接受本版本设计契约
+- [x] 接受 V3 接口同步设计契约
 - [ ] 允许创建或修改 Pencil `.pen`
 - [ ] 接受 Pencil 设计令牌与 Token Showcase
 - [x] 接受 Pencil 页面、状态与响应式
@@ -255,4 +295,7 @@ pencil:
   - `ok多加一些华丽的动效`
 - 历史授权解释：上述契约修订阶段仅允许修订 V2；后续 Pencil 已完成并验收。
 - HTML 实验室授权解释：已批准生成实验室，并要求增加更华丽的动效；已加入页面入场、任务扫光、实时脉冲、数字弹性、卡片反馈和状态推进，同时提供动效开关与 reduced-motion 降级。当前实验室待验收，仍未授权生产写入。
+- V3 修订说明：2026-07-30 按当前商户 Controller 重新分类接口状态，新增统一账单详情、会话与账号安全、商品、门店设置、接口覆盖及更完整异常状态；Pencil 视觉方向和令牌保持不变。
+- V3 契约审批：用户回复 `ok继续`，已接受接口同步范围；本次不修改 Pencil、令牌、AI 素材或视觉方向。
+- V3 实验室授权：用户回复 `批准修改 HTML 实验室`；接口预留修订、页面补齐和验证已完成，当前等待实验室验收。
 - 要求修改：已取消过早渠道入口，改为统一选菜后在最后一步选择履约方式；账单锁定堂食、外带、自取三种类型。

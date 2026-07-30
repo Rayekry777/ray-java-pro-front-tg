@@ -1,7 +1,8 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>经营总览 · Ray 运营台实验室</title><link rel="stylesheet" href="site.css"></head>
 <body data-page="overview"><div class="app" data-shell></div><template data-content><main class="page">
   <div class="demo-note reveal">◆ 本页面使用本地演示数据；不连接 API、认证或持久化。</div>
-  <header class="page-head reveal"><div><p class="eyebrow">RAY · 负责人 / 经理</p><h1>经营总览</h1><p>高峰期实时调度与异常优先处理。</p></div><button data-flash-tasks>刷新任务动效</button></header>
+  <header class="page-head reveal"><div><p class="eyebrow">RAY · 负责人 / 经理</p><h1>经营总览</h1><p>使用营业聚合快照安排当前任务与异常优先级。</p></div><button data-flash-tasks>刷新营业聚合</button></header>
+  <div class="api-strip reveal"><span class="api-code">GET /admin/operations/live</span><span class="api-code">updatedAt 12:08:24</span><span class="api-code">version 37</span></div>
   <section class="stats reveal">
     <article class="stat"><span>今日营业额</span><strong>¥ 4,286</strong><small>较昨日 +8.2%</small></article>
     <article class="stat"><span>待下厨</span><strong>6</strong><small>最久 08:24</small></article>
@@ -18,9 +19,8 @@
         <article class="task" data-mode="dine-in"><i class="task-bar"></i><div><h3>B03 桌 · 报价已变化</h3><p>优惠已失效，需要重新确认</p></div><span class="tag">需处理</span></article>
       </div>
     </section>
-    <aside class="panel activity reveal"><div class="section-title"><h2>营业动态</h2><span class="tag ok">实时</span></div>
+    <aside class="panel activity reveal"><div class="section-title"><h2>营业动态</h2><span class="tag ok">聚合已更新</span></div>
       <div class="timeline"><div class="timeline-row"><b>11:56</b><i></i><span>A08 桌 2 道菜制作完成</span></div><div class="timeline-row"><b>11:54</b><i></i><span>自取 082 已接单</span></div><div class="timeline-row"><b>11:49</b><i></i><span>现场外带 016 完成报价</span></div><div class="timeline-row"><b>11:43</b><i></i><span>总店营业状态校准完成</span></div></div>
     </aside>
   </div>
 </main></template><script src="site.js"></script></body></html>
-

@@ -1,13 +1,13 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>统一账单中心 · Ray</title><link rel="stylesheet" href="site.css"></head>
 <body data-page="bills"><div class="app" data-shell></div><template data-content><main class="page">
-  <header class="page-head reveal"><div><p class="eyebrow">BILL CENTER</p><h1>统一账单中心</h1><p>确认后按堂食、外带、自取查询和处理。</p></div><button data-demo="已刷新本地演示数据。">刷新</button></header>
+  <header class="page-head reveal"><div><p class="eyebrow">BILL CENTER</p><h1>统一账单中心</h1><p>统一账单与历史只读来源在同一列表中按服务方式和状态查询。</p></div><button data-demo="设计演示：GET /admin/bills 刷新分页。">刷新</button></header>
+  <div class="api-strip reveal"><span class="api-code">GET /admin/bills</span><span class="api-code">serviceMode</span><span class="api-code">status</span><span class="api-code compat">UNIFIED / LEGACY_DINE_IN / LEGACY_PICKUP</span></div>
   <section class="panel table-panel reveal"><div class="toolbar"><button class="active" data-filter="all">全部 28</button><button data-filter="dine-in">堂食 14</button><button data-filter="takeout">外带 6</button><button data-filter="pickup">自取 8</button></div>
     <table><thead><tr><th>账单</th><th>类型</th><th>位置 / 识别码</th><th>状态</th><th>等待</th><th>金额</th><th>下一动作</th></tr></thead><tbody>
-      <tr data-bill-mode="dine-in"><td>BI202607300128</td><td><span class="tag">堂食</span></td><td>A08 桌</td><td>待上菜</td><td class="timer">07:18</td><td>¥136.00</td><td><button data-demo="打开 A08 桌账单工作区（设计演示）。">查看账单</button></td></tr>
-      <tr data-bill-mode="takeout"><td>BI202607300127</td><td><span class="tag warn">外带</span></td><td>现场 016</td><td>待交付</td><td>03:42</td><td>¥88.00</td><td><button data-demo="确认交付仅为设计演示。">确认交付</button></td></tr>
-      <tr data-bill-mode="pickup"><td>BI202607300126</td><td><span class="tag ok">自取</span></td><td>取餐码 082</td><td>待取餐</td><td class="timer">04:36</td><td>¥72.00</td><td><button data-demo="核码取走接口尚未实现。">核码取走</button></td></tr>
-      <tr data-bill-mode="dine-in"><td>BI202607300125</td><td><span class="tag">堂食</span></td><td>B03 桌</td><td>待结账</td><td>12:08</td><td>¥246.00</td><td><button data-demo="打开结账预览（设计演示）。">结账</button></td></tr>
+      <tr data-bill-mode="dine-in"><td>BI202607300128<br><small class="muted">UNIFIED</small></td><td><span class="tag">堂食</span></td><td>A08 桌</td><td>待清台</td><td class="timer">07:18</td><td>¥136.00</td><td><a href="bill-detail.html">查看账单</a></td></tr>
+      <tr data-bill-mode="takeout"><td>BI202607300127<br><small class="muted">UNIFIED</small></td><td><span class="tag warn">外带</span></td><td>现场 016</td><td>待交付</td><td>03:42</td><td>¥88.00</td><td><a href="bill-detail.html">确认交付</a></td></tr>
+      <tr data-bill-mode="pickup"><td>202607300126<br><small class="muted">LEGACY_PICKUP</small></td><td><span class="tag ok">自取</span></td><td>取餐码 082</td><td>待取餐</td><td class="timer">04:36</td><td>¥72.00</td><td><a href="bill-detail.html">只读详情</a></td></tr>
+      <tr data-bill-mode="dine-in"><td>DI202607300125<br><small class="muted">LEGACY_DINE_IN</small></td><td><span class="tag">堂食</span></td><td>B03 桌</td><td>待结账</td><td>12:08</td><td>¥246.00</td><td><a href="bill-detail.html">只读详情</a></td></tr>
     </tbody></table>
   </section>
 </main></template><script src="site.js"></script></body></html>
-
