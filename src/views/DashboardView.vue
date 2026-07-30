@@ -1,38 +1,68 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { ElMessage } from "element-plus";
-import { dineInApi, orderApi, workspaceApi } from "@/api/services";
+import { operationsApi } from "@/api/services";
 import { errorMessage } from "@/api/http";
-import type { BusinessData, DineInOverview, OrderStatistics } from "@/types";
+import { useMerchantSession } from "@/session/merchantSession";
+import type { OperationsLive } from "@/types";
 
-const loading=ref(false), switching=ref(false), refreshedAt=ref(""), errors=ref<string[]>([]);
-const business=ref<BusinessData>(), dineIn=ref<DineInOverview>(), takeaway=ref<OrderStatistics>(), shopStatus=ref(0);
-const metrics=computed(()=>[
-  ["今日总营业额",`¥${(business.value?.turnover||0).toLocaleString("zh-CN",{minimumFractionDigits:2})}`,"全店"],
-  ["今日有效订单",String(business.value?.validOrderCount||0),"堂食 + 外带"],
-  ["平均客单价",`¥${(business.value?.unitPrice||0).toFixed(2)}`,"全渠道"],
-  ["在店桌台",String(dineIn.value?.occupiedTables||0),"桌"],
-  ["待取餐",String(takeaway.value?.readyForPickup||0),"单"]
+const { session, hasPermission } = useMerchantSession();
+const loading = ref(false);
+const live = ref<OperationsLive>();
+const loadError = ref("");
+const freshness = computed(() => live.value?.updatedAt
+  ? new Date(live.value.updatedAt).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false })
+  : "--:--");
+const roleNames: Record<string, string> = {
+  TENANT_OWNER: "租户负责人", STORE_MANAGER: "门店经理", CASHIER: "前台 / 收银员", WAITER: "服务员", KITCHEN: "后厨"
+};
+const roleLabel = computed(() => session.value?.roles.map(role => roleNames[role] || role).join(" / ") || "当前员工");
+const metrics = computed(() => [
+  ["占用桌台", live.value?.occupiedTables || 0, "桌", "/dine-in/tables", "dining-table:read"],
+  ["待制作", live.value?.pendingKitchenItems || 0, "项", "/kitchen", "kitchen-item:read"],
+  ["待上菜", live.value?.readyToServeItems || 0, "项", "/serve-tasks", "serve-task:read"],
+  ["营业账单", live.value?.openBills || 0, "单", "/bills", "bill:read"],
+  ["待接自取", live.value?.pendingPickupOrders || 0, "单", "/pickup/orders", "pickup-order:read"]
 ]);
-async function load(){
-  loading.value=true;errors.value=[];
-  const results=await Promise.allSettled([workspaceApi.business(),workspaceApi.shopStatus(),orderApi.statistics(),dineInApi.overview()]);
-  if(results[0].status==="fulfilled")business.value=results[0].value;else errors.value.push(`经营数据：${errorMessage(results[0].reason)}`);
-  if(results[1].status==="fulfilled")shopStatus.value=results[1].value;else errors.value.push(`店铺状态：${errorMessage(results[1].reason)}`);
-  if(results[2].status==="fulfilled")takeaway.value=results[2].value;else errors.value.push(`外带数据：${errorMessage(results[2].reason)}`);
-  if(results[3].status==="fulfilled")dineIn.value=results[3].value;else errors.value.push(`堂食数据：${errorMessage(results[3].reason)}`);
-  refreshedAt.value=new Date().toLocaleTimeString("zh-CN",{hour12:false});loading.value=false;
+async function load() {
+  loading.value = true; loadError.value = "";
+  try { live.value = await operationsApi.live(); }
+  catch (error) { loadError.value = errorMessage(error); ElMessage.error(loadError.value); }
+  finally { loading.value = false; }
 }
-async function toggleShop(){const next=shopStatus.value?0:1;switching.value=true;try{await workspaceApi.setShopStatus(next);shopStatus.value=next;window.dispatchEvent(new Event("ray:shop-business-changed"));ElMessage.success("店铺状态已更新")}catch(e){ElMessage.error(errorMessage(e))}finally{switching.value=false}}
 onMounted(load);
 </script>
-<template><div class="page dashboard-overview" v-loading="loading">
-  <div class="page-title compact"><div><p class="eyebrow">RESTAURANT OVERVIEW</p><h1>全店工作台</h1><p>统一关注堂食桌台、后厨出餐与外带取餐。</p></div><div class="title-actions"><span class="freshness">更新于 {{refreshedAt||"--:--:--"}}</span><el-button @click="load">刷新数据</el-button><div class="business-switch"><span class="status-dot" :class="{off:!shopStatus}"></span><div><small>全店营业状态</small><strong>{{shopStatus?"营业中":"已打烊"}}</strong></div><button class="switch" :class="{off:!shopStatus}" :disabled="switching" role="switch" :aria-checked="Boolean(shopStatus)" @click="toggleShop"><span></span></button></div></div></div>
-  <el-alert v-if="errors.length" title="部分运营数据暂不可用" :description="errors.join('；')" type="warning" show-icon :closable="false"/>
-  <section class="metrics dashboard-metrics"><article v-for="[label,value,note] in metrics" :key="label"><span>{{label}}</span><strong>{{value}}</strong><small>{{note}}</small></article></section>
-  <section class="channel-grid">
-    <article class="channel-card dine-channel"><header><div><p class="eyebrow">DINE-IN</p><h2>堂食运营</h2></div><router-link to="/dine-in/tables">进入桌台 →</router-link></header><div class="channel-stats"><div><span>空闲桌</span><strong>{{dineIn?.availableTables||0}}</strong></div><div><span>就餐中</span><strong>{{dineIn?.occupiedTables||0}}</strong></div><div><span>待结账</span><strong>{{dineIn?.waitingCheckoutTables||0}}</strong></div><div class="urgent-stat"><span>待上菜</span><strong>{{dineIn?.readyToServeItems||0}}</strong></div></div><footer><router-link class="button primary" to="/dine-in/tables">开台 / 桌台</router-link><router-link class="button secondary" to="/dine-in/orders">堂食订单</router-link><router-link class="button secondary" to="/dine-in/kitchen">出餐管理</router-link></footer></article>
-    <article class="channel-card delivery-channel"><header><div><p class="eyebrow">TAKEAWAY</p><h2>外带运营</h2></div><router-link to="/takeaway/orders">进入订单 →</router-link></header><div class="channel-stats"><div><span>待接单</span><strong>{{takeaway?.toBeConfirmed||0}}</strong></div><div><span>备餐中</span><strong>{{takeaway?.preparing||0}}</strong></div><div><span>待取餐</span><strong>{{takeaway?.readyForPickup||0}}</strong></div><div><span>今日有效订单</span><strong>{{business?.validOrderCount||0}}</strong></div></div><footer><router-link class="button primary" to="/takeaway/orders">处理外带订单</router-link><router-link class="button secondary" to="/reports">查看经营报表</router-link></footer></article>
-  </section>
-  <section class="panel attention-strip"><div><p class="eyebrow">NOW</p><h2>当前需要关注</h2></div><ul><li><strong>{{dineIn?.waitingKitchenItems||0}}</strong><span>道菜等待制作</span></li><li><strong>{{dineIn?.readyToServeItems||0}}</strong><span>道菜等待上桌</span></li><li><strong>{{takeaway?.toBeConfirmed||0}}</strong><span>笔外带等待接单</span></li></ul></section>
-</div></template>
+
+<template>
+  <div class="page production-overview" v-loading="loading">
+    <div class="page-title compact">
+      <div><p class="eyebrow">LIVE OPERATIONS</p><h1>今天，先处理下一件事。</h1><p>{{ roleLabel }} · {{ session?.activeStore.name }}</p></div>
+      <div class="title-actions"><span class="aggregate-freshness"><i></i>营业聚合 · {{ freshness }} 更新</span><el-button @click="load">刷新任务</el-button></div>
+    </div>
+    <el-alert v-if="loadError" title="营业聚合加载失败" :description="loadError" type="error" show-icon :closable="false"><template #default><el-button link type="primary" @click="load">重试</el-button></template></el-alert>
+    <section class="stats overview-stats">
+      <router-link v-for="[label,value,unit,path,permission] in metrics" v-show="hasPermission(String(permission))" :key="label" class="stat" :to="String(path)">
+        <span>{{ label }}</span><strong>{{ value }}<em>{{ unit }}</em></strong><small>查看当前任务 →</small>
+      </router-link>
+    </section>
+    <section class="overview-work-grid">
+      <article v-if="hasPermission('bill:create')" class="panel hero-task">
+        <div><p class="eyebrow">PRIMARY ACTION</p><h2>统一开单</h2><p>先完成选菜，最后选择堂食或现场外带，再由服务端给出最终报价。</p></div>
+        <router-link class="button primary" to="/operations">开始选菜</router-link>
+      </article>
+      <article v-if="hasPermission('kitchen-item:read')" class="panel task-card" data-accent="warning">
+        <span>后厨制作</span><strong>{{ live?.pendingKitchenItems || 0 }}</strong><p>项商品等待开始制作</p><router-link to="/kitchen">进入后厨 →</router-link>
+      </article>
+      <article v-if="hasPermission('serve-task:read')" class="panel task-card" data-accent="success">
+        <span>前厅上菜</span><strong>{{ live?.readyToServeItems || 0 }}</strong><p>项已完成制作，等待上桌</p><router-link to="/serve-tasks">处理上菜 →</router-link>
+      </article>
+      <article v-if="hasPermission('pickup-order:read')" class="panel task-card" data-accent="info">
+        <span>历史自取兼容</span><strong>{{ live?.pendingPickupOrders || 0 }}</strong><p>单小程序自取等待处理</p><router-link to="/pickup/orders">查看自取 →</router-link>
+      </article>
+    </section>
+    <section class="panel workflow-panel">
+      <div><p class="eyebrow">SERVICE FLOW</p><h2>营业闭环</h2></div>
+      <ol><li><b>01</b><span>选菜</span></li><li><b>02</b><span>报价确认</span></li><li><b>03</b><span>制作</span></li><li><b>04</b><span>上菜 / 交付</span></li><li><b>05</b><span>收款 / 清台</span></li></ol>
+    </section>
+  </div>
+</template>

@@ -27,7 +27,7 @@ async function act(row:Order,type:"confirm"|"reject"|"cancel"|"ready"|"collected
 onMounted(load);
 </script>
 <template><div class="page">
-  <div class="page-title compact"><div><p class="eyebrow">TAKEAWAY ORDERS</p><h1>外带订单</h1><p>处理接单、备餐、通知取餐和取走流程。</p></div></div>
+  <div class="page-title compact"><div><p class="eyebrow">PICKUP COMPATIBILITY</p><h1>自取任务</h1><p>处理小程序历史 `TAKEAWAY` 自取兼容订单；现场外带使用统一账单。</p></div><el-tag type="warning" effect="plain">兼容接口 /admin/order/**</el-tag></div>
   <section class="order-summary"><article><span>待接单</span><strong>{{statistics.toBeConfirmed}}</strong></article><article><span>备餐中</span><strong>{{statistics.preparing}}</strong></article><article><span>待取餐</span><strong>{{statistics.readyForPickup}}</strong></article></section>
   <section class="panel filter-bar"><el-input v-model="query.number" placeholder="订单号" clearable/><el-input v-model="query.pickupPhone" placeholder="取餐手机号" clearable/><el-select v-model="query.status" placeholder="订单状态" clearable><el-option v-for="(v,k) in statusMap" :key="k" :label="v[0]" :value="String(k)"/></el-select><el-button type="primary" @click="query.page=1;load()">查询</el-button></section>
   <section class="panel table-panel">
@@ -38,5 +38,5 @@ onMounted(load);
     </el-table>
     <el-pagination v-model:current-page="query.page" v-model:page-size="query.pageSize" layout="total, prev, pager, next" :total="total" @current-change="load"/>
   </section>
-  <el-drawer v-model="detailVisible" title="外带订单详情" size="min(520px, 92vw)"><el-descriptions v-if="detail" :column="1" border><el-descriptions-item label="订单号">{{detail.number}}</el-descriptions-item><el-descriptions-item label="取餐码">{{detail.pickupCode||"待生成"}}</el-descriptions-item><el-descriptions-item label="菜品">{{detail.orderDishes}}</el-descriptions-item><el-descriptions-item label="金额">¥{{detail.amount}}</el-descriptions-item><el-descriptions-item label="取餐联系人">{{detail.pickupName}} · {{detail.pickupPhone}}</el-descriptions-item><el-descriptions-item label="预计取餐">{{detail.estimatedPickupTime||"尽快取餐"}}</el-descriptions-item><el-descriptions-item label="备注">{{detail.remark||"无"}}</el-descriptions-item></el-descriptions></el-drawer>
+  <el-drawer v-model="detailVisible" title="历史自取订单详情" size="min(520px, 92vw)"><el-descriptions v-if="detail" :column="1" border><el-descriptions-item label="订单号">{{detail.number}}</el-descriptions-item><el-descriptions-item label="取餐码">{{detail.pickupCode||"待生成"}}</el-descriptions-item><el-descriptions-item label="菜品">{{detail.orderDishes}}</el-descriptions-item><el-descriptions-item label="金额">¥{{detail.amount}}</el-descriptions-item><el-descriptions-item label="取餐联系人">{{detail.pickupName}} · {{detail.pickupPhone}}</el-descriptions-item><el-descriptions-item label="预计取餐">{{detail.estimatedPickupTime||"尽快取餐"}}</el-descriptions-item><el-descriptions-item label="备注">{{detail.remark||"无"}}</el-descriptions-item></el-descriptions></el-drawer>
 </div></template>

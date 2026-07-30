@@ -32,7 +32,7 @@ async function open() {
       const detail = await resourceApi.dishDetail(props.dishId);
       Object.assign(form, {
         id: detail.id, name: detail.name, categoryId: detail.categoryId,
-        price: detail.price / 100, image: detail.image, description: detail.description || "",
+        price: detail.price, image: detail.image, description: detail.description || "",
         status: detail.status, flavors: (detail.flavors || []).map(item => ({ ...item }))
       });
     }
@@ -57,7 +57,7 @@ async function submit() {
   saving.value = true;
   const payload: DishPayload = {
     ...form,
-    price: Math.round(Number(form.price) * 100),
+      price: Number(form.price),
     flavors: form.flavors.map(({ id, dishId, name, value }: DishFlavor) => ({ id, dishId, name: name.trim(), value: value.trim() }))
   };
   try {

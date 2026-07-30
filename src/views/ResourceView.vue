@@ -6,8 +6,11 @@ import { resourceApi } from "@/api/services";
 import DishFormDialog from "@/components/DishFormDialog.vue";
 import EntityFormDialog from "@/components/EntityFormDialog.vue";
 import SetmealFormDialog from "@/components/SetmealFormDialog.vue";
+import { useMerchantSession } from "@/session/merchantSession";
 
 const props=defineProps<{kind:"dishes"|"setmeals"|"categories"|"employees"}>();
+const { hasPermission }=useMerchantSession();
+const canManage=computed(()=>hasPermission(props.kind==="employees"?"employee:manage":"product:manage"));
 const config=computed(()=>({
   dishes:{title:"菜品管理",eyebrow:"DISHES",search:"菜品名称"},
   setmeals:{title:"套餐管理",eyebrow:"SETMEALS",search:"套餐名称"},
@@ -60,13 +63,14 @@ async function removeRows(targets:any[]){
   }catch(e){if(e!=="cancel"&&e!=="close")ElMessage.error(errorMessage(e))}
 }
 </script>
-<template><div class="page"><div class="page-title compact"><div><p class="eyebrow">{{config.eyebrow}}</p><h1>{{config.title}}</h1><p>数据来源于管理端真实分页接口。</p></div><div class="title-actions"><el-button v-if="['dishes','setmeals'].includes(kind)" type="danger" plain :disabled="!selected.length" @click="removeRows(selected)">批量删除</el-button><el-button type="primary" @click="createCurrent">新增{{config.title.replace('管理','')}}</el-button></div></div>
+<template><div class="page"><div class="page-title compact"><div><p class="eyebrow">{{config.eyebrow}}</p><h1>{{config.title}}</h1><p>数据来源于管理端真实分页接口。</p></div><div v-if="canManage" class="title-actions"><el-button v-if="['dishes','setmeals'].includes(kind)" type="danger" plain :disabled="!selected.length" @click="removeRows(selected)">批量删除</el-button><el-button type="primary" @click="createCurrent">新增{{config.title.replace('管理','')}}</el-button></div></div>
+  <nav v-if="kind!=='employees'" class="resource-tabs" aria-label="商品管理分区"><router-link to="/products/dishes">菜品</router-link><router-link to="/products/setmeals">套餐</router-link><router-link to="/products/categories">分类</router-link></nav>
   <section class="panel filter-bar"><el-input v-model="query.name" :placeholder="config.search" clearable/><el-select v-model="query.status" placeholder="状态" clearable><el-option label="启用 / 起售" value="1"/><el-option label="禁用 / 停售" value="0"/></el-select><el-button type="primary" @click="query.page=1;load()">查询</el-button></section>
   <section class="panel table-panel"><el-table :data="rows" v-loading="loading" empty-text="暂无数据" @selection-change="selected=$event">
     <el-table-column v-if="['dishes','setmeals'].includes(kind)" type="selection" width="46"/>
     <el-table-column prop="name" label="名称" min-width="150"/><el-table-column v-if="kind==='employees'" prop="username" label="用户名" min-width="130"/><el-table-column v-if="kind==='employees'" prop="phone" label="手机号" min-width="130"/><el-table-column v-if="['dishes','setmeals'].includes(kind)" prop="categoryName" label="分类" min-width="120"/><el-table-column v-if="['dishes','setmeals'].includes(kind)" label="价格" width="110"><template #default="{row}">¥{{(row.price/100).toFixed(2)}}</template></el-table-column><el-table-column v-if="kind==='categories'" prop="sort" label="排序" width="90"/><el-table-column prop="updateTime" label="更新时间" min-width="170"/>
     <el-table-column label="状态" width="110"><template #default="{row}"><el-tag :type="row.status===1?'success':'info'">{{row.status===1?(kind==='employees'||kind==='categories'?'启用':'起售'):(kind==='employees'||kind==='categories'?'禁用':'停售')}}</el-tag></template></el-table-column>
-    <el-table-column label="操作" :width="kind==='employees'?240:210"><template #default="{row}"><el-button link type="primary" @click="editCurrent(row)">编辑</el-button><el-button v-if="kind==='employees'" link @click="password(row)">改密</el-button><el-button link :type="row.status===1?'danger':'primary'" :loading="changing===row.id" @click="toggle(row)">{{row.status===1?(kind==='employees'||kind==='categories'?'禁用':'停售'):(kind==='employees'||kind==='categories'?'启用':'起售')}}</el-button><el-button v-if="kind==='categories'" link type="danger" @click="removeRows([row])">删除</el-button></template></el-table-column>
+    <el-table-column label="操作" :width="canManage?(kind==='employees'?240:210):100"><template #default="{row}"><template v-if="canManage"><el-button link type="primary" @click="editCurrent(row)">编辑</el-button><el-button v-if="kind==='employees'" link @click="password(row)">改密</el-button><el-button link :type="row.status===1?'danger':'primary'" :loading="changing===row.id" @click="toggle(row)">{{row.status===1?(kind==='employees'||kind==='categories'?'禁用':'停售'):(kind==='employees'||kind==='categories'?'启用':'起售')}}</el-button><el-button v-if="kind==='categories'" link type="danger" @click="removeRows([row])">删除</el-button></template><span v-else class="muted">只读</span></template></el-table-column>
   </el-table><el-pagination v-model:current-page="query.page" v-model:page-size="query.pageSize" layout="total, prev, pager, next" :total="total" @current-change="load"/></section>
   <DishFormDialog v-if="kind==='dishes'" v-model="dishDialog" :dish-id="editingDishId" @saved="load" />
   <SetmealFormDialog v-if="kind==='setmeals'" v-model="setmealDialog" :setmeal-id="editingSetmealId" @saved="load"/>

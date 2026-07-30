@@ -15,8 +15,8 @@ authorization:
   tokenReview: accepted
   pencilReview: accepted
   labCreation: completed
-  labReview: pending
-  productionWrite: pending
+  labReview: accepted
+  productionWrite: approved
 tokens:
   variables: 49
   showcaseNode: WBYwh
@@ -47,8 +47,23 @@ lab:
   interactions: ready
   motion: preserved
   fidelity: verified
-  reviewStatus: pending
-  status: ready_for_review
+  reviewStatus: accepted
+  status: accepted
+implementation:
+  productionWriteAllowed: true
+  sourceRoot: D:\JavaPro\ctjava\ray-java-pro-front-tg\src
+  sessionAndPermissions: implemented
+  unifiedOrdering: implemented
+  billsAndFulfillment: implemented
+  managementPages: implemented
+  status: implemented
+verification:
+  typecheck: passed
+  build: passed
+  runtime: passed
+  integration: read_only_passed
+  fidelity: verified
+  status: passed
 ```
 
 ## 1. 范围与证据
@@ -283,8 +298,8 @@ lab:
 - [ ] 接受 Pencil 设计令牌与 Token Showcase
 - [x] 接受 Pencil 页面、状态与响应式
 - [x] 允许生成 HTML 实验室
-- [ ] 接受 HTML 实验室与动效
-- [ ] 允许写入生产工程
+- [x] 接受 HTML 实验室与动效
+- [x] 允许写入生产工程
 - [ ] 授权自动选择高风险视觉方向
 ```
 
@@ -298,4 +313,6 @@ lab:
 - V3 修订说明：2026-07-30 按当前商户 Controller 重新分类接口状态，新增统一账单详情、会话与账号安全、商品、门店设置、接口覆盖及更完整异常状态；Pencil 视觉方向和令牌保持不变。
 - V3 契约审批：用户回复 `ok继续`，已接受接口同步范围；本次不修改 Pencil、令牌、AI 素材或视觉方向。
 - V3 实验室授权：用户回复 `批准修改 HTML 实验室`；接口预留修订、页面补齐和验证已完成，当前等待实验室验收。
+- V3 实验室验收：用户回复 `接受`；HTML 实验室、响应式状态与动效已验收通过，生产工程仍待单独授权。
+- V3 生产工程授权：用户提出 `帮我根据新的设计稿来改我的项目`；已明确授权将验收后的设计写入 Vue Web 生产工程。
 - 要求修改：已取消过早渠道入口，改为统一选菜后在最后一步选择履约方式；账单锁定堂食、外带、自取三种类型。

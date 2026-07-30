@@ -1,6 +1,6 @@
 export interface ApiResult<T> { code: number; data: T; msg?: string }
 export interface PageResult<T> { total: number; records: T[] }
-export interface Session { id: number; name: string; token: string; userName: string }
+export interface Session { id: number; name: string; token: string; userName: string; tenantId: number; storeId: number }
 export interface BusinessData { newUsers: number; orderCompletionRate: number; turnover: number; unitPrice: number; validOrderCount: number }
 export interface ProductOverview { discontinued: number; sold: number }
 export interface OrderOverview { allOrders: number; cancelledOrders: number; completedOrders: number; deliveredOrders: number; waitingOrders: number }
@@ -38,3 +38,108 @@ export interface ShopBusinessSettings {
   updatedAt?: string | null;
   updatedBy?: number | null;
 }
+
+export interface MerchantEmployeeSession { id: number; username: string; name: string }
+export interface MerchantTenantSession {
+  id: number;
+  tenantCode: string;
+  name: string;
+  status: string;
+  expireTime?: string | null;
+}
+export interface AuthorizedStore {
+  id: number;
+  storeCode: string;
+  name: string;
+  timezone: string;
+  defaultStore: boolean;
+}
+export interface MerchantSession {
+  employee: MerchantEmployeeSession;
+  tenant: MerchantTenantSession;
+  activeStore: AuthorizedStore;
+  authorizedStores: AuthorizedStore[];
+  roles: string[];
+  permissions: string[];
+  suggestedWorkspace: "KITCHEN" | "DINE_IN_SERVICE" | "OPERATIONS" | "OVERVIEW";
+}
+export interface StoreSwitchResult { storeId: number; token: string }
+export interface OperationsLive {
+  occupiedTables: number;
+  pendingKitchenItems: number;
+  readyToServeItems: number;
+  openBills: number;
+  pendingPickupOrders: number;
+  updatedAt: string;
+  version: number;
+}
+export type BillServiceMode = "DINE_IN" | "TAKEOUT" | "PICKUP" | "DELIVERY";
+export type BillStatus =
+  | "DRAFT" | "CONFIRMED" | "DINING" | "WAIT_KITCHEN" | "COOKING"
+  | "READY" | "SERVED" | "WAIT_CHECKOUT" | "PAID" | "COMPLETED"
+  | "CANCELLED" | "REFUNDED";
+export interface BillItem {
+  id: number;
+  dishId?: number | null;
+  setmealId?: number | null;
+  name: string;
+  image?: string | null;
+  quantity: number;
+  price: number;
+  amount: number;
+  status: string;
+  remark?: string | null;
+}
+export interface Bill {
+  id: number;
+  sourceType: string;
+  sourceId?: number | null;
+  billNo: string;
+  orderSource: string;
+  serviceMode?: BillServiceMode | null;
+  status: BillStatus;
+  paymentStatus: "UNPAID" | "PAID" | "REFUNDED";
+  amount: number;
+  discountAmount: number;
+  payableAmount: number;
+  tableId?: number | null;
+  guestCount?: number | null;
+  remark?: string | null;
+  version: number;
+  createTime: string;
+  confirmedAt?: string | null;
+  items: BillItem[];
+  allowedActions: string[];
+}
+export interface BillQuote {
+  billId: number;
+  quoteId: string;
+  version: number;
+  amount: number;
+  discountAmount: number;
+  payableAmount: number;
+  expiresAt: string;
+}
+export interface BillKitchenItem {
+  id: number;
+  billId: number;
+  billNo: string;
+  serviceMode: "DINE_IN" | "TAKEOUT";
+  tableId?: number | null;
+  name: string;
+  quantity: number;
+  status: KitchenItemStatus;
+  remark?: string | null;
+  submittedAt: string;
+}
+export interface TenantRole {
+  id: number;
+  roleCode: string;
+  name: string;
+  status: string;
+  systemRole: boolean;
+  description?: string | null;
+  permissions: string[];
+}
+export interface PermissionDefinition { code: string; name: string }
+export interface EmployeeStoreAssignment { storeIds: number[]; defaultStoreId: number }

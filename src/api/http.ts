@@ -35,3 +35,6 @@ export function errorMessage(error: unknown) {
   if (axios.isAxiosError(error)) return error.response?.data?.msg || (error.code === "ECONNABORTED" ? "请求超时，请稍后重试" : error.message);
   return error instanceof Error ? error.message : "发生未知错误";
 }
+export function errorStatus(error: unknown) {
+  return axios.isAxiosError(error) ? Number(error.response?.status || 0) : 0;
+}

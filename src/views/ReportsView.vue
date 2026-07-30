@@ -1,11 +1,12 @@
-<script setup lang="ts">
-import { computed, onMounted, ref } from "vue";import { ElMessage } from "element-plus";import { reportApi } from "@/api/services";import { errorMessage } from "@/api/http";
-const today=new Date(),start=new Date();start.setDate(today.getDate()-6);const fmt=(d:Date)=>d.toISOString().slice(0,10);const range=ref<[string,string]>([fmt(start),fmt(today)]),loading=ref(false),turnover=ref<any>(),users=ref<any>(),orders=ref<any>(),top=ref<any>();
-const topRows=computed(()=>{const names=top.value?.nameList?.split(",")||[],nums=top.value?.numberList?.split(",")||[];return names.map((name:string,i:number)=>({name,count:nums[i]}))});
-async function load(){if(!range.value)return;loading.value=true;try{[turnover.value,users.value,orders.value,top.value]=await Promise.all([reportApi.turnover(...range.value),reportApi.users(...range.value),reportApi.orders(...range.value),reportApi.top10(...range.value)])}catch(e){ElMessage.error(errorMessage(e))}finally{loading.value=false}}onMounted(load);
-const exporting=ref(false);async function exportReport(){exporting.value=true;try{const blob=await reportApi.exportFile();const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`运营数据报表-${new Date().toISOString().slice(0,10)}.xlsx`;a.click();URL.revokeObjectURL(url)}catch(e){ElMessage.error(errorMessage(e))}finally{exporting.value=false}}
-</script>
-<template><div class="page"><div class="page-title compact"><div><p class="eyebrow">DATA REPORT</p><h1>数据统计</h1><p>查看营业额、订单、用户和商品销量。</p></div><div class="title-actions"><el-date-picker v-model="range" type="daterange" value-format="YYYY-MM-DD" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"/><el-button type="primary" :loading="loading" @click="load">查询</el-button><el-button :loading="exporting" @click="exportReport">导出报表</el-button></div></div>
-  <section class="metrics report-metrics"><article><span>订单总数</span><strong>{{orders?.totalOrderCount||0}}</strong><small>选定周期</small></article><article><span>有效订单</span><strong>{{orders?.validOrderCount||0}}</strong><small>选定周期</small></article><article><span>订单完成率</span><strong>{{Math.round((orders?.orderCompletionRate||0)*((orders?.orderCompletionRate||0)<=1?100:1))}}%</strong><small>选定周期</small></article><article><span>新增用户</span><strong>{{users?.newUserList?.split(",").reduce((a:number,b:string)=>a+Number(b),0)||0}}</strong><small>选定周期</small></article></section>
-  <section class="report-grid" v-loading="loading"><article class="panel report-card"><p class="eyebrow">TURNOVER TREND</p><h2>营业额趋势</h2><div class="trend-list"><div v-for="(date,i) in turnover?.dateList?.split(',')" :key="date"><span>{{date}}</span><i :style="{width:`${Math.min(100,Number(turnover.turnoverList.split(',')[i])/100)}%`}"></i><strong>¥{{turnover.turnoverList.split(',')[i]}}</strong></div></div></article><article class="panel report-card"><p class="eyebrow">TOP SALES</p><h2>销量排行</h2><ol><li v-for="(item,i) in topRows" :key="item.name"><b>{{i+1}}</b><span>{{item.name}}</span><strong>{{item.count}}</strong></li></ol></article></section>
-</div></template>
+<template>
+  <div class="page">
+    <div class="page-title compact">
+      <div><p class="eyebrow">REPORTS</p><h1>经营报表</h1><p>保留页面容量，当前不发送报表网络请求。</p></div>
+    </div>
+    <section class="panel unavailable-panel">
+      <span class="feedback-code">?</span>
+      <div><h2>接口证据待确认</h2><p>当前后端 Controller 扫描未发现 `/admin/report/**` 路由。为避免调用不存在或已废弃的接口，报表暂时停用。</p></div>
+      <el-tag type="warning" effect="plain">UNKNOWN</el-tag>
+    </section>
+  </div>
+</template>
