@@ -1,0 +1,17 @@
+{
+  "home": "index.html",
+  "routes": [
+    {"page":"员工登录","file":"login.html","entry":"状态矩阵 / 直接访问","exit":"经营总览"},
+    {"page":"经营总览","file":"index.html","entry":"登录 / 全局导航","exit":"统一营业台 / 当前任务 / 账单中心"},
+    {"page":"统一营业台","file":"operations.html","entry":"全局导航","exit":"履约与报价"},
+    {"page":"履约与报价","file":"quote.html","entry":"统一营业台","exit":"统一营业台"},
+    {"page":"统一账单中心","file":"bills.html","entry":"全局导航","exit":"账单本地演示动作"},
+    {"page":"前厅服务与交付","file":"tasks.html","entry":"全局导航","exit":"本地状态推进"},
+    {"page":"后厨出餐中心","file":"kitchen.html","entry":"全局导航","exit":"本地状态推进"},
+    {"page":"员工角色与门店","file":"employees.html","entry":"全局导航","exit":"本地保存演示"},
+    {"page":"权限与异常","file":"states.html","entry":"全局导航","exit":"登录 / 报价 / 首页"},
+    {"page":"设计系统","file":"tokens.html","entry":"全局导航","exit":"所有业务页面"},
+    {"page":"安全出口","file":"404.html","entry":"错误地址","exit":"经营总览"}
+  ]
+}
+

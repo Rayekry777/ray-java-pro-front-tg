@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>设计令牌 · Ray</title><link rel="stylesheet" href="site.css"></head>
+<body data-page="tokens"><div class="app" data-shell></div><template data-content><main class="page">
+  <header class="page-head reveal"><div><p class="eyebrow">RAY RESTAURANT OPERATIONS · V2</p><h1>餐厅运营台设计令牌</h1><p>面向高峰期调度、统一开单与三类账单处理的紧凑型界面系统。</p></div><span class="tag">WEB · 1440 / 1024</span></header>
+  <section class="panel token-card reveal"><h2>品牌与语义颜色</h2><div class="color-row"><div class="swatch" style="background:#10283d">--navy<br>#10283D</div><div class="swatch" style="background:#b88945">--brass<br>#B88945</div><div class="swatch" style="background:#d93a31">--action<br>#D93A31</div><div class="swatch" style="background:#287a52">--success<br>#287A52</div><div class="swatch" style="background:#2b628d">--info<br>#2B628D</div></div></section>
+  <section class="token-grid" style="margin-top:16px">
+    <article class="panel token-card reveal"><h3>字体层级</h3><p style="font:700 38px var(--font-ui);margin:8px 0">Display 38</p><p style="font:700 26px var(--font-ui)">Title 26</p><p>正文 Body 14</p><p style="font:12px var(--font-data)">DATA / 12 / 600</p></article>
+    <article class="panel token-card reveal"><h3>控件状态</h3><p><button class="primary">主要按钮</button> <button>次要按钮</button></p><p><input class="search" value="输入控件"></p><p><span class="tag">堂食</span> <span class="tag warn">外带</span> <span class="tag ok">自取</span></p></article>
+    <article class="panel token-card reveal"><h3>间距与形状</h3><p class="muted">4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48</p><div style="height:40px;background:var(--brass-soft);border-radius:4px;margin-bottom:10px"></div><div style="height:56px;background:var(--canvas);border:1px solid var(--border);border-radius:8px"></div><p class="muted">控件圆角 4 · 面板圆角 8 · 对话框圆角 10</p></article>
+  </section>
+  <section id="motion" class="panel token-card reveal" style="margin-top:16px"><h2>动效令牌与降级</h2><div class="token-grid"><div><p><code>--motion-fast: 120ms</code></p><p><code>--motion-base: 180ms</code></p><p><code>--motion-slow: 620ms</code></p><p class="muted">页面入场、数字弹性、任务扫光、卡片反馈和状态推进均可通过右下角开关关闭。</p></div><div class="motion-sample"><i></i></div><div><strong>Reduced motion</strong><p class="muted">系统启用“减少动态效果”时，关闭非必要动画和过渡，保留状态变化结果。</p></div></div></section>
+</main></template><script src="site.js"></script></body></html>
+

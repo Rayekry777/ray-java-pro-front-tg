@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>员工角色与门店 · Ray</title><link rel="stylesheet" href="site.css"></head>
+<body data-page="employees"><div class="app" data-shell></div><template data-content><main class="page">
+  <header class="page-head reveal"><div><p class="eyebrow">ACCESS CONTROL</p><h1>员工角色与门店</h1><p>账号、岗位与门店授权一体化配置。</p></div><button class="primary" data-demo="员工创建仍使用现有接口；门店授权接口尚未实现。">新增员工</button></header>
+  <div class="form-grid"><aside class="panel employee-list reveal"><div class="field"><input aria-label="搜索员工" placeholder="搜索员工"></div><div class="employee-card active"><strong>陈晨</strong><p class="muted">前台 / 收银员 · 总店</p></div><div class="employee-card"><strong>周师傅</strong><p class="muted">后厨 · 总店</p></div><div class="employee-card"><strong>林经理</strong><p class="muted">门店经理 · 2 家门店</p></div></aside>
+    <section class="panel employee-form reveal"><p class="eyebrow">EMPLOYEE PROFILE</p><h2>陈晨</h2><div class="field"><label for="name">员工姓名</label><input id="name" value="陈晨"></div><div class="field"><label for="phone">手机号</label><input id="phone" value="138****1208"></div>
+      <h3>岗位角色</h3><div class="check-grid"><label class="check"><input type="checkbox" checked> 前台 / 收银员</label><label class="check"><input type="checkbox"> 服务员</label><label class="check"><input type="checkbox"> 后厨</label><label class="check"><input type="checkbox" disabled> 租户负责人（不可授予）</label></div>
+      <h3>授权门店</h3><div class="check-grid"><label class="check"><input type="checkbox" checked> Ray 现代中餐厅 · 总店</label><label class="check"><input type="checkbox"> Ray 现代中餐厅 · 西湖店</label></div>
+      <div class="demo-note" style="margin-top:20px">权限目录与员工门店授权接口尚未实现，保存按钮仅用于评审交互。</div><button class="primary" data-demo="设计演示：未发送员工权限保存请求。">保存配置</button>
+    </section>
+  </div>
+</main></template><script src="site.js"></script></body></html>
+
