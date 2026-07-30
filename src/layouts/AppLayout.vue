@@ -128,7 +128,13 @@ async function logout() {
           </el-dropdown>
         </div>
       </header>
-      <main><router-view/></main>
+      <main>
+        <router-view v-slot="{ Component, route: currentRoute }">
+          <Transition name="route-stage" mode="out-in">
+            <component :is="Component" :key="currentRoute.path"/>
+          </Transition>
+        </router-view>
+      </main>
       <footer class="production-footer"><span>Ray 运营台 · 当前权限由服务端会话提供</span><span>{{ session?.tenant.tenantCode }} · {{ session?.activeStore.storeCode }}</span></footer>
     </section>
 

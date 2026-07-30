@@ -155,7 +155,7 @@ onMounted(loadProducts);
     </section>
 
     <aside class="production-cart">
-      <div class="cart-heading"><div><p class="eyebrow">CURRENT BILL</p><h2>当前账单草稿</h2></div><span class="cart-count">{{ cartCount }}</span></div>
+      <div class="cart-heading"><div><p class="eyebrow">CURRENT BILL</p><h2>当前账单草稿</h2></div><Transition name="count-pop" mode="out-in"><span :key="cartCount" class="cart-count">{{ cartCount }}</span></Transition></div>
       <p class="cart-rule">商品变化后覆盖草稿明细，并使旧报价失效</p>
       <div class="cart-lines">
         <article v-for="line in cartLines" :key="keyOf(line.product)" class="cart-line">
