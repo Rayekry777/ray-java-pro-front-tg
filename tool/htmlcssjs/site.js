@@ -34,7 +34,7 @@ if (shell) {
             <div><strong>陈晨</strong><small>Ray 现代中餐厅 · 总店</small></div>
             <a href="account.html">账号安全</a>
             <a href="store.html">门店营业设置</a>
-            <a href="login.html" data-demo="设计演示：POST /admin/employee/logout 后返回登录页。">退出登录</a>
+            <a href="login.html" data-demo="设计演示：POST /api/merchant/v1/employee/logout 后返回登录页。">退出登录</a>
           </div>
         </div>
       </header>

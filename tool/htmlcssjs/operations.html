@@ -2,7 +2,7 @@
 <body data-page="operations"><div class="app" data-shell></div><template data-content><main class="menu-layout">
   <section class="menu-main">
     <header class="page-head reveal"><div><p class="eyebrow">DRAFT · MERCHANT_WEB</p><h1>统一营业台</h1><p>先创建草稿并完成选品，结算时再选择堂食或外带。</p></div><span class="tag ok">草稿 #90018 · version 3</span></header>
-    <div class="api-strip reveal"><span class="api-code write">POST /admin/bills/drafts</span><span class="api-code write">PUT /admin/bills/drafts/{id}/items</span><span class="api-code">GET /admin/category/list</span><span class="api-code">GET /admin/dish/list</span></div>
+    <div class="api-strip reveal"><span class="api-code write">POST /api/merchant/v1/bills/drafts</span><span class="api-code write">PUT /api/merchant/v1/bills/drafts/{id}/items</span><span class="api-code">GET /api/merchant/v1/category/list</span><span class="api-code">GET /api/merchant/v1/dish/list</span></div>
     <section class="stats reveal"><article class="stat"><span>待下厨</span><strong>6</strong></article><article class="stat"><span>制作中</span><strong>11</strong></article><article class="stat"><span>待上菜</span><strong>4</strong></article><article class="stat urgent"><span>待交付</span><strong>3</strong></article><article class="stat"><span>待取餐</span><strong>5</strong></article></section>
     <div class="catalog-tools reveal"><input class="search" aria-label="搜索菜品" placeholder="⌕  搜索菜品"><div class="categories"><button class="navy">招牌热菜</button><button>经典凉菜</button><button>时令蔬菜</button><button>主食</button></div></div>
     <section class="dish-grid">

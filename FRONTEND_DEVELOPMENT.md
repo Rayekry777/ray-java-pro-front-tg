@@ -31,19 +31,19 @@
 
 | 能力 | 状态 | 生产策略 |
 |---|---|---|
-| 商户登录、会话、切店、改密、退出 | 已实现 | 调用真实接口；角色、权限、门店以 `/admin/session/me` 为真源 |
-| 营业聚合 | 已实现 | 调用 `/admin/operations/live`，使用刷新式聚合 |
+| 商户登录、会话、切店、改密、退出 | 已实现 | 调用真实接口；角色、权限、门店以 `/api/merchant/v1/session/me` 为真源 |
+| 营业聚合 | 已实现 | 调用 `/api/merchant/v1/operations/live`，使用刷新式聚合 |
 | 统一账单草稿、报价、确认、查询与动作 | 已实现 | 调用真实接口并遵守 `allowedActions` |
 | 统一后厨与前厅上菜 | 已实现 | 调用真实接口，后厨不展示金额和顾客隐私 |
-| 堂食区域与桌台读取 | 已实现 | 仅调用 `/admin/dine-in/areas` 和 `/admin/dine-in/tables`；开台及后续流程进入统一账单 |
+| 堂食区域与桌台读取 | 已实现 | 仅调用 `/api/merchant/v1/dine-in/areas` 和 `/api/merchant/v1/dine-in/tables`；开台及后续流程进入统一账单 |
 | 商品、员工、权限、营业设置 | 已实现 | 调用真实接口并按动作级权限控制入口 |
 | 小程序统一 `PICKUP` 写入 | 开发中 | 商户端不创建；写入完成后直接进入统一账单中心 |
 | 报表 | 未知 | 禁用入口，不发送网络请求 |
-| 旧独立堂食订单与后厨接口 | 已废弃 | 不再调用 `/admin/dine-in/orders/**`、`/admin/dine-in/kitchen/**` 和 `/admin/dine-in/dashboard/**` |
-| 旧自取订单接口 | 已废弃 | 不再调用 `/admin/order/**`，不保留兼容任务页 |
-| 历史账单兼容查询 | 已废弃 | 不再调用 `/admin/bills/legacy/**`，账单详情只使用统一账单 ID |
+| 旧独立堂食订单与后厨接口 | 已废弃 | 不再调用 `/api/merchant/v1/dine-in/orders/**`、`/api/merchant/v1/dine-in/kitchen/**` 和 `/api/merchant/v1/dine-in/dashboard/**` |
+| 旧自取订单接口 | 已废弃 | 不再调用 `/api/merchant/v1/order/**`，不保留兼容任务页 |
+| 历史账单兼容查询 | 已废弃 | 不再调用 `/api/merchant/v1/bills/legacy/**`，账单详情只使用统一账单 ID |
 
-接口同时具有 `/api/merchant/v1/**` 别名；当前前端沿用 `/admin/**`，由 `VITE_API_BASE` 和本地代理统一转发。
+商户接口唯一使用 `/api/merchant/v1/**`。服务层以默认 `VITE_API_BASE=/api` 为公共前缀，请求路径使用 `/merchant/v1/**`，浏览器最终请求完整的版本化地址。
 
 ## 5. 页面与路由状态
 
@@ -121,3 +121,5 @@
 - `npm run typecheck`：通过。
 - `npm run build`：通过；生成 `dist/`，仍存在单个主 JS chunk 超过 500 kB 的既有性能提醒。
 - 本轮未执行运行验证和真实接口联调；桌面浏览器、移动端浏览器及真机均未验证。
+- 商户请求统一迁移到 `/api/merchant/v1/**`，服务层相对 `VITE_API_BASE=/api` 使用 `/merchant/v1/**`；Axios 地址组合验证结果为 `/api/merchant/v1/session/me`。
+- 路径迁移后 `npm run build` 通过（包含类型检查）；仍存在单个主 JS chunk 超过 500 kB 的既有性能提醒，未执行浏览器和真实账号联调。

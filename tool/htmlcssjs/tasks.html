@@ -1,14 +1,14 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>前厅服务与交付 · Ray</title><link rel="stylesheet" href="site.css"></head>
 <body data-page="tasks"><div class="app" data-shell></div><template data-content><main class="page">
   <header class="page-head reveal"><div><p class="eyebrow">FRONT SERVICE</p><h1>前厅服务与交付</h1><p>按等待时间与责任岗位安排下一动作。</p></div><button data-flash-tasks>高亮紧急任务</button></header>
-  <div class="api-strip reveal"><span class="api-code">GET /admin/serve/tasks</span><span class="api-code write">PUT /admin/serve/tasks/{id}/confirm</span><span class="api-code write">PUT /admin/bills/{id}/handover</span><span class="api-code compat">/admin/order/** 旧自取</span></div>
+  <div class="api-strip reveal"><span class="api-code">GET /api/merchant/v1/serve/tasks</span><span class="api-code write">PUT /api/merchant/v1/serve/tasks/{id}/confirm</span><span class="api-code write">PUT /api/merchant/v1/bills/{id}/handover</span><span class="api-code compat">/api/merchant/v1/order/** 旧自取</span></div>
   <div class="split"><section class="panel task-list reveal"><div class="section-title"><h2>待上桌</h2><span class="tag">4 项</span></div><div class="tasks">
-    <article class="task"><i class="task-bar"></i><div><h3>A08 桌 · 毛血旺</h3><p>一楼大厅 · 制作完成 7 分钟</p></div><button data-demo="设计演示：PUT /admin/serve/tasks/{id}/confirm。">确认上桌</button></article>
+    <article class="task"><i class="task-bar"></i><div><h3>A08 桌 · 毛血旺</h3><p>一楼大厅 · 制作完成 7 分钟</p></div><button data-demo="设计演示：PUT /api/merchant/v1/serve/tasks/{id}/confirm。">确认上桌</button></article>
     <article class="task"><i class="task-bar"></i><div><h3>B03 桌 · 番茄炒蛋</h3><p>服务员：陈晨 · 制作完成 4 分钟</p></div><button data-demo="设计演示：确认上桌后刷新账单 allowedActions。">确认上桌</button></article>
     <article class="task"><i class="task-bar"></i><div><h3>A02 桌 · 米饭 ×3</h3><p>优先上桌 · 顾客已催菜</p></div><button data-demo="设计演示：任务已被其他员工处理时进入 STALE。">确认上桌</button></article>
   </div></section><section class="panel task-list reveal"><div class="section-title"><h2>交付与取餐</h2><span class="tag warn">8 项</span></div><div class="tasks">
-    <article class="task" data-mode="takeout"><i class="task-bar"></i><div><h3>现场外带 016</h3><p>统一账单 · 已支付 · 制作完成</p></div><button data-demo="设计演示：PUT /admin/bills/{id}/handover。">确认交付</button></article>
-    <article class="task" data-mode="pickup"><i class="task-bar"></i><div><h3>自取 082</h3><p>旧 TAKEAWAY 兼容 · 预计 12:10</p></div><button data-demo="设计演示：PUT /admin/order/collected/{id}。">确认取走</button></article>
+    <article class="task" data-mode="takeout"><i class="task-bar"></i><div><h3>现场外带 016</h3><p>统一账单 · 已支付 · 制作完成</p></div><button data-demo="设计演示：PUT /api/merchant/v1/bills/{id}/handover。">确认交付</button></article>
+    <article class="task" data-mode="pickup"><i class="task-bar"></i><div><h3>自取 082</h3><p>旧 TAKEAWAY 兼容 · 预计 12:10</p></div><button data-demo="设计演示：PUT /api/merchant/v1/order/collected/{id}。">确认取走</button></article>
     <article class="task" data-mode="pickup"><i class="task-bar"></i><div><h3>自取 076</h3><p>旧 TAKEAWAY 兼容 · 顾客已到店</p></div><button data-demo="设计演示：兼容接口确认取走。">确认取走</button></article>
   </div></section></div>
 </main></template><script src="site.js"></script></body></html>

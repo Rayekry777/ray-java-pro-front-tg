@@ -93,7 +93,7 @@ verification:
 - 工程、接口与产品证据：
   - 目标工程为 Vue 3.5、Vite 7、TypeScript 5.8、Element Plus 2.10。
   - 后端已具备商户 JWT、`tenant_id + store_id` 隔离、动作级权限、五类系统岗位、员工角色和门店授权、403 与审计链。
-  - 所有商户 Controller 同时声明 `/admin/**` 和 `/api/merchant/v1/**` 路由；实验室继续以 `/admin/**` 表达业务契约，并在接口覆盖说明中记录版本化别名。
+- 所有商户 Controller 仅声明 `/api/merchant/v1/**` 路由；实验室和生产实现统一使用版本化路径。
   - 当前前端只按 Token 判断登录，登录会话不包含角色、权限和门店上下文；侧栏和路由对所有员工固定展示。
   - 后端已提供统一账单草稿、报价、确认、查询、收款、取消、清台、制作、上菜和现场外带交付；旧堂食与 `TAKEAWAY/DELIVERY` 数据通过历史账单只读门面兼容。
   - 当前实验室仍把多项已实现接口标成“尚未实现”，且缺少统一账单详情、账号安全、角色权限目录、门店营业设置、商品管理和历史只读账单的产品空间。
@@ -138,45 +138,45 @@ verification:
 
 | 能力 | HTTP 方法 + 路径 | 状态 | 设计与网络动作 |
 |---|---|---|---|
-| 员工登录 | `POST /admin/employee/login` | implemented | 增加租户编码输入；成功后只保存 Token，再初始化会话 |
-| 当前会话 | `GET /admin/session/me` | implemented | 返回员工、租户、当前门店、授权门店、角色、权限和建议工作台；应用外壳和岗位入口以此为准 |
-| 授权门店 | `GET /admin/session/stores` | implemented | 门店切换器的真实数据源 |
-| 切换门店 | `POST /admin/session/switch-store` | implemented | 成功后替换 Token，清空门店级页面缓存并重新初始化 |
-| 修改本人密码 | `PUT /admin/session/password` | implemented | 账号安全抽屉；成功后提示重新登录 |
-| 退出登录 | `POST /admin/employee/logout` | implemented | 清除服务端会话版本并返回登录页 |
-| 角色维护 | `GET/POST /admin/rbac/roles`、`PUT/DELETE /admin/rbac/roles/{id}` | implemented | 系统角色只读，自定义角色按权限目录配置 |
-| 权限目录 | `GET /admin/rbac/permissions` | implemented | 角色编辑器只允许从服务端目录选择权限 |
-| 员工角色 | `/admin/rbac/employees/{employeeId}/roles` | implemented | 员工编辑流程中的角色步骤 |
-| 员工门店授权 | `/admin/rbac/employees/{employeeId}/stores` | implemented | 员工编辑流程中的门店步骤 |
-| 员工管理 | `/admin/employee/**` | implemented | 需要与角色和门店配置整合；经理只能管理普通员工 |
-| 营业聚合任务 | `GET /admin/operations/live` | implemented | 营业台任务数量、更新时间和聚合状态真源 |
-| 创建账单草稿 | `POST /admin/bills/drafts` | implemented | 开始选菜时创建，不提前要求账单类型 |
-| 编辑草稿菜品 | `PUT /admin/bills/drafts/{id}/items` | implemented | 统一维护菜品或套餐、数量和备注 |
-| 按履约方式报价 | `POST /admin/bills/drafts/{id}/quote` | implemented | 最后选择 `DINE_IN/TAKEOUT` 后报价；堂食填写桌台和人数 |
-| 确认账单 | `POST /admin/bills/drafts/{id}/confirm` | implemented | 使用 `quoteId` 和幂等键确认；价格或草稿变化进入 409 状态 |
-| 统一账单查询 | `GET /admin/bills`、`GET /admin/bills/{id}` | implemented | 按服务方式和状态筛选；响应包含服务端 `allowedActions` |
-| 历史账单详情 | `GET /admin/bills/legacy/{sourceType}/{sourceId}` | implemented | `LEGACY_DINE_IN/LEGACY_PICKUP` 只读详情，无可执行动作 |
-| 统一账单收款 | `POST /admin/bills/{id}/checkout` | implemented | 独立支付方式、金额和幂等键；支付与履约状态分开 |
-| 统一账单取消 | `POST /admin/bills/{id}/cancel` | implemented | 仅在 `allowedActions` 包含取消时显示，必须填写原因 |
-| 统一堂食清台 | `POST /admin/bills/{id}/clear-table` | implemented | 仅已支付且全部上桌的堂食账单可执行 |
-| 统一外带交付 | `PUT /admin/bills/{id}/handover` | implemented | 仅已支付且制作完成的 `TAKEOUT` 可交付 |
-| 堂食区域与桌台 | `GET /admin/dine-in/areas`、`GET /admin/dine-in/tables` | implemented | 营业台桌台区真实数据 |
-| 开台 | `POST /admin/dine-in/tables/{tableId}/open` | implemented | 在当前桌上下文继续点餐，不跳列表页 |
-| 堂食订单与明细 | `GET /admin/dine-in/orders`、`GET /admin/dine-in/orders/{id}` | implemented | 活跃订单在营业台处理，分页页只承担历史和异常查询 |
-| 加菜与提交后厨 | `POST /admin/dine-in/orders/{id}/items`、`POST /admin/dine-in/orders/{id}/submit-kitchen` | implemented | 后加菜必须持续显示“下厨 N 项”，不能按聚合状态隐藏 |
-| 堂食结账与清台 | `POST /admin/dine-in/orders/{id}/checkout-preview`、`pay`、`clear-table` | implemented | 结账前展示未下厨/未上菜警告；支付后显示“待清台” |
+| 员工登录 | `POST /api/merchant/v1/employee/login` | implemented | 增加租户编码输入；成功后只保存 Token，再初始化会话 |
+| 当前会话 | `GET /api/merchant/v1/session/me` | implemented | 返回员工、租户、当前门店、授权门店、角色、权限和建议工作台；应用外壳和岗位入口以此为准 |
+| 授权门店 | `GET /api/merchant/v1/session/stores` | implemented | 门店切换器的真实数据源 |
+| 切换门店 | `POST /api/merchant/v1/session/switch-store` | implemented | 成功后替换 Token，清空门店级页面缓存并重新初始化 |
+| 修改本人密码 | `PUT /api/merchant/v1/session/password` | implemented | 账号安全抽屉；成功后提示重新登录 |
+| 退出登录 | `POST /api/merchant/v1/employee/logout` | implemented | 清除服务端会话版本并返回登录页 |
+| 角色维护 | `GET/POST /api/merchant/v1/rbac/roles`、`PUT/DELETE /api/merchant/v1/rbac/roles/{id}` | implemented | 系统角色只读，自定义角色按权限目录配置 |
+| 权限目录 | `GET /api/merchant/v1/rbac/permissions` | implemented | 角色编辑器只允许从服务端目录选择权限 |
+| 员工角色 | `/api/merchant/v1/rbac/employees/{employeeId}/roles` | implemented | 员工编辑流程中的角色步骤 |
+| 员工门店授权 | `/api/merchant/v1/rbac/employees/{employeeId}/stores` | implemented | 员工编辑流程中的门店步骤 |
+| 员工管理 | `/api/merchant/v1/employee/**` | implemented | 需要与角色和门店配置整合；经理只能管理普通员工 |
+| 营业聚合任务 | `GET /api/merchant/v1/operations/live` | implemented | 营业台任务数量、更新时间和聚合状态真源 |
+| 创建账单草稿 | `POST /api/merchant/v1/bills/drafts` | implemented | 开始选菜时创建，不提前要求账单类型 |
+| 编辑草稿菜品 | `PUT /api/merchant/v1/bills/drafts/{id}/items` | implemented | 统一维护菜品或套餐、数量和备注 |
+| 按履约方式报价 | `POST /api/merchant/v1/bills/drafts/{id}/quote` | implemented | 最后选择 `DINE_IN/TAKEOUT` 后报价；堂食填写桌台和人数 |
+| 确认账单 | `POST /api/merchant/v1/bills/drafts/{id}/confirm` | implemented | 使用 `quoteId` 和幂等键确认；价格或草稿变化进入 409 状态 |
+| 统一账单查询 | `GET /api/merchant/v1/bills`、`GET /api/merchant/v1/bills/{id}` | implemented | 按服务方式和状态筛选；响应包含服务端 `allowedActions` |
+| 历史账单详情 | `GET /api/merchant/v1/bills/legacy/{sourceType}/{sourceId}` | implemented | `LEGACY_DINE_IN/LEGACY_PICKUP` 只读详情，无可执行动作 |
+| 统一账单收款 | `POST /api/merchant/v1/bills/{id}/checkout` | implemented | 独立支付方式、金额和幂等键；支付与履约状态分开 |
+| 统一账单取消 | `POST /api/merchant/v1/bills/{id}/cancel` | implemented | 仅在 `allowedActions` 包含取消时显示，必须填写原因 |
+| 统一堂食清台 | `POST /api/merchant/v1/bills/{id}/clear-table` | implemented | 仅已支付且全部上桌的堂食账单可执行 |
+| 统一外带交付 | `PUT /api/merchant/v1/bills/{id}/handover` | implemented | 仅已支付且制作完成的 `TAKEOUT` 可交付 |
+| 堂食区域与桌台 | `GET /api/merchant/v1/dine-in/areas`、`GET /api/merchant/v1/dine-in/tables` | implemented | 营业台桌台区真实数据 |
+| 开台 | `POST /api/merchant/v1/dine-in/tables/{tableId}/open` | implemented | 在当前桌上下文继续点餐，不跳列表页 |
+| 堂食订单与明细 | `GET /api/merchant/v1/dine-in/orders`、`GET /api/merchant/v1/dine-in/orders/{id}` | implemented | 活跃订单在营业台处理，分页页只承担历史和异常查询 |
+| 加菜与提交后厨 | `POST /api/merchant/v1/dine-in/orders/{id}/items`、`POST /api/merchant/v1/dine-in/orders/{id}/submit-kitchen` | implemented | 后加菜必须持续显示“下厨 N 项”，不能按聚合状态隐藏 |
+| 堂食结账与清台 | `POST /api/merchant/v1/dine-in/orders/{id}/checkout-preview`、`pay`、`clear-table` | implemented | 结账前展示未下厨/未上菜警告；支付后显示“待清台” |
 | 堂食动作许可 | 订单详情 `allowedActions`、未下厨/未上菜计数 | implemented | 所有主按钮由服务端动作许可和前端权限交集决定 |
-| 后厨制作 | `/admin/dine-in/kitchen/items/**` | implemented | 后厨只推进待制作、制作中和制作完成 |
-| 统一账单后厨 | `GET /admin/bills/kitchen/items`、`PUT /admin/bills/{billId}/items/{itemId}/start|ready|serve` | implemented | 堂食和现场外带统一制作，堂食完成后进入上菜 |
-| 前厅上菜任务 | `GET /admin/serve/tasks`、`PUT /admin/serve/tasks/{id}/confirm` | implemented | 制作完成后由前厅确认上桌 |
-| 现有自取订单 | `/admin/order/**` | implemented | 作为历史 `TAKEAWAY` 自取兼容接口；迁移完成前保持可用 |
+| 后厨制作 | `/api/merchant/v1/dine-in/kitchen/items/**` | implemented | 后厨只推进待制作、制作中和制作完成 |
+| 统一账单后厨 | `GET /api/merchant/v1/bills/kitchen/items`、`PUT /api/merchant/v1/bills/{billId}/items/{itemId}/start|ready|serve` | implemented | 堂食和现场外带统一制作，堂食完成后进入上菜 |
+| 前厅上菜任务 | `GET /api/merchant/v1/serve/tasks`、`PUT /api/merchant/v1/serve/tasks/{id}/confirm` | implemented | 制作完成后由前厅确认上桌 |
+| 现有自取订单 | `/api/merchant/v1/order/**` | implemented | 作为历史 `TAKEAWAY` 自取兼容接口；迁移完成前保持可用 |
 | 现场外带账单 | 统一账单中的 `serviceMode=TAKEOUT` | implemented | 不占桌台，不要求顾客账号、预约时间或小程序取餐身份 |
-| 自取账单处理 | 旧 `/admin/order/**` 与统一账单历史门面 | implemented | 旧 `TAKEAWAY` 按 `PICKUP` 展示；接单、拒单、备妥、取走继续走兼容接口 |
-| 三类账单统一后厨任务 | 新堂食和外带走 `/admin/bills/kitchen/**`；旧自取走兼容接口 | developing | 实验室明确双轨来源，不伪造尚未提供的小程序统一账单写接口 |
-| 菜品与分类 | `/admin/dish/**`、`/admin/category/**` | implemented | 有权限者真实调用，无权限者不显示入口 |
-| 套餐 | `/admin/setmeal/**` | implemented | 与分类、菜品共同归入商品管理 |
-| 门店营业设置 | `/admin/shop/status`、`/admin/shop/business-settings`、营业时段与模式更新接口 | implemented | 门店设置页覆盖手动开关、营业模式和周营业时段 |
-| 报表 | `/admin/report/**` | unknown | 当前 Controller 扫描未取得路由证据；入口保留为禁用“待接口确认”，不发请求 |
+| 自取账单处理 | 旧 `/api/merchant/v1/order/**` 与统一账单历史门面 | implemented | 旧 `TAKEAWAY` 按 `PICKUP` 展示；接单、拒单、备妥、取走继续走兼容接口 |
+| 三类账单统一后厨任务 | 新堂食和外带走 `/api/merchant/v1/bills/kitchen/**`；旧自取走兼容接口 | developing | 实验室明确双轨来源，不伪造尚未提供的小程序统一账单写接口 |
+| 菜品与分类 | `/api/merchant/v1/dish/**`、`/api/merchant/v1/category/**` | implemented | 有权限者真实调用，无权限者不显示入口 |
+| 套餐 | `/api/merchant/v1/setmeal/**` | implemented | 与分类、菜品共同归入商品管理 |
+| 门店营业设置 | `/api/merchant/v1/shop/status`、`/api/merchant/v1/shop/business-settings`、营业时段与模式更新接口 | implemented | 门店设置页覆盖手动开关、营业模式和周营业时段 |
+| 报表 | `/api/merchant/v1/report/**` | unknown | 当前 Controller 扫描未取得路由证据；入口保留为禁用“待接口确认”，不发请求 |
 
 ### 2.1 V3 实验室接口预留修订
 
