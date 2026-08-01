@@ -25,7 +25,7 @@
 - 设计契约：`tool/design/design-contract.md` V3。
 - Pencil：`tool/design/desigen-web.pen`，方向 A 已验收。
 - HTML 实验室：`tool/htmlcssjs/`，16 个路由和动效已验收。
-- 忠实度记录：`tool/htmlcssjs/fidelity-ledger.md`。
+- 忠实度记录：`cache/agent-validation/pencil-html/reports/fidelity-ledger.md`（本地验证缓存，不纳入版本控制）。
 
 ## 4. 接口边界
 
@@ -35,10 +35,13 @@
 | 营业聚合 | 已实现 | 调用 `/admin/operations/live`，使用刷新式聚合 |
 | 统一账单草稿、报价、确认、查询与动作 | 已实现 | 调用真实接口并遵守 `allowedActions` |
 | 统一后厨与前厅上菜 | 已实现 | 调用真实接口，后厨不展示金额和顾客隐私 |
-| 旧自取订单 | 已实现 | 继续使用 `/admin/order/**` 兼容接口并明确标注“历史自取” |
+| 堂食区域与桌台读取 | 已实现 | 仅调用 `/admin/dine-in/areas` 和 `/admin/dine-in/tables`；开台及后续流程进入统一账单 |
 | 商品、员工、权限、营业设置 | 已实现 | 调用真实接口并按动作级权限控制入口 |
-| 小程序统一 `PICKUP` 写入 | 开发中 | 商户端不创建，只保留兼容查询和处理入口 |
+| 小程序统一 `PICKUP` 写入 | 开发中 | 商户端不创建；写入完成后直接进入统一账单中心 |
 | 报表 | 未知 | 禁用入口，不发送网络请求 |
+| 旧独立堂食订单与后厨接口 | 已废弃 | 不再调用 `/admin/dine-in/orders/**`、`/admin/dine-in/kitchen/**` 和 `/admin/dine-in/dashboard/**` |
+| 旧自取订单接口 | 已废弃 | 不再调用 `/admin/order/**`，不保留兼容任务页 |
+| 历史账单兼容查询 | 已废弃 | 不再调用 `/admin/bills/legacy/**`，账单详情只使用统一账单 ID |
 
 接口同时具有 `/api/merchant/v1/**` 别名；当前前端沿用 `/admin/**`，由 `VITE_API_BASE` 和本地代理统一转发。
 
@@ -50,7 +53,6 @@
 - `/bills`、`/bills/:id`：统一账单查询、详情和 `allowedActions`。
 - `/serve-tasks`：前厅待上菜任务。
 - `/kitchen`：统一账单制作队列。
-- `/pickup/orders`：历史自取兼容任务。
 - `/products/*`：分类、菜品和套餐。
 - `/employees`、`/access`：员工资料及角色/门店授权。
 - `/store`、`/account`：门店营业设置和本人账号安全。
@@ -75,11 +77,9 @@
 
 ## 8. 当前计划
 
-1. 已按 HTML 实验室重新对齐共享应用外壳、侧栏、顶部栏和窄屏底部导航。
-2. 已将经营总览恢复为“指标、当前优先任务、营业快照”结构，并对齐统一营业台和账单页面标题、密度与卡片表达。
-3. 已将商品管理恢复为实验室卡片/分类列表结构，将员工授权恢复为双栏结构，并补齐门店周营业时间。
-4. 已完成类型检查、构建、真实会话运行截图及 1440/1024/760 响应式巡检。
-5. 后续：在可回滚业务数据上验证统一账单写流程，并进行路由懒加载和 Element Plus 拆包。
+1. 完成旧堂食订单、旧自取订单和历史账单兼容入口清理，并以统一账单作为唯一业务入口。
+2. 在可回滚业务数据上验证统一账单收款、取消、清台、交付和幂等冲突处理。
+3. 完成路由懒加载和 Element Plus 拆包，消除主 chunk 体积提醒。
 
 ## 9. 验证记录
 
@@ -93,7 +93,7 @@
 - 真实登录：`default` 租户管理员成功初始化租户负责人、默认门店和通配权限。
 - 只读接口联调：会话、门店、营业聚合、账单、后厨、上菜、权限、角色、商品和营业设置均成功。
 - 浏览器巡检：主要生产路由可达且无页面级错误；账单空筛选和历史详情兼容问题已修正。
-- 生产截图：`tool/production-login-v3.png`、`production-overview-v3.png`、`production-ordering-v3.png`、`production-bills-1024-v3.png`、`production-bill-detail-v3.png`。
+- 生产截图：`cache/agent-validation/pencil-platform/web/production/`（本地验证缓存）。
 - 未验证：收款、取消、清台、交付、员工授权和角色维护等写操作；真机不适用，接口以桌面浏览器联调。
 
 ### 2026-07-31
@@ -108,7 +108,16 @@
 - 所有新增动画遵守 `prefers-reduced-motion`，系统要求减少动态效果时关闭非必要动画和过渡。
 - `npm run typecheck`：通过。
 - `npm run build`：通过；仍存在单个主 chunk 超过 500 kB 的既有性能提醒。
-- 真实会话运行截图：`tool/qa-overview.png`、`qa-ordering.png`、`qa-bills.png`、`qa-kitchen.png`、`qa-products.png`、`qa-access.png`。
-- 响应式截图：`tool/qa-overview-1024.png`、`qa-ordering-760.png`。
-- 动效与侧栏状态截图：`tool/qa-motion-sidebar.png`、`qa-motion-sidebar-1024.png`。
+- 真实会话、响应式、动效与侧栏状态截图：`cache/agent-validation/pencil-platform/web/qa/`（本地验证缓存）。
 - 未执行：收款、取消、清台、交付、角色保存、员工授权等业务写操作；本轮仅验证读取、页面结构和响应式表现。
+
+### 2026-08-01
+
+- 项目未上线，删除旧堂食订单、旧自取订单及历史账单兼容入口。
+- 堂食、现场外带和自取查询全部收敛到统一账单；后厨与前厅任务直接使用统一账单商品接口。
+- 删除一次性后端实施提示词 `BACKEND_DINE_IN_PROMPT.md`；其旧接口约定不再作为当前开发依据，历史内容仍可从 Git 记录追溯。
+- `FRONTEND_DEVELOPMENT.md` 继续作为架构、页面、接口边界、验证和计划的唯一长期入口；后续约束变化直接更新本文件，不在项目根目录新增一次性提示词。
+- 历史 Agent 验证截图、忠实度报告和可复用 QA 脚本已分别归档到 `cache/agent-validation/` 与 `cache/agent-tools/`；正式 Pencil、设计契约和 HTML 实验室仍保留在 `tool/`。
+- `npm run typecheck`：通过。
+- `npm run build`：通过；生成 `dist/`，仍存在单个主 JS chunk 超过 500 kB 的既有性能提醒。
+- 本轮未执行运行验证和真实接口联调；桌面浏览器、移动端浏览器及真机均未验证。

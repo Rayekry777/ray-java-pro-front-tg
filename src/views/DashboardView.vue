@@ -18,17 +18,17 @@ const roleNames: Record<string, string> = {
 };
 const roleLabel = computed(() => session.value?.roles.map(role => roleNames[role] || role).join(" / ") || "当前员工");
 const metrics = computed(() => [
-  ["占用桌台", live.value?.occupiedTables || 0, "桌", "/dine-in/tables", "dining-table:read"],
+  ["占用桌台", live.value?.occupiedTables || 0, "桌", "/bills", "bill:read"],
   ["待制作", live.value?.pendingKitchenItems || 0, "项", "/kitchen", "kitchen-item:read"],
   ["待上菜", live.value?.readyToServeItems || 0, "项", "/serve-tasks", "serve-task:read"],
   ["营业账单", live.value?.openBills || 0, "单", "/bills", "bill:read"],
-  ["待接自取", live.value?.pendingPickupOrders || 0, "单", "/pickup/orders", "pickup-order:read"]
+  ["待取餐", live.value?.pendingPickupOrders || 0, "单", "/bills", "bill:read"]
 ]);
 const priorityTasks = computed(() => [
   { title: "后厨待制作", description: "进入后厨出餐中心推进制作状态", value: live.value?.pendingKitchenItems || 0, unit: "项", path: "/kitchen", permission: "kitchen-item:read", mode: "takeout" },
   { title: "前厅待上菜", description: "制作完成后由前厅确认上桌", value: live.value?.readyToServeItems || 0, unit: "项", path: "/serve-tasks", permission: "serve-task:read", mode: "dine-in" },
-  { title: "营业中账单", description: "查看堂食、外带与历史自取账单", value: live.value?.openBills || 0, unit: "单", path: "/bills", permission: "bill:read", mode: "dine-in" },
-  { title: "历史自取待接单", description: "兼容小程序旧自取订单处理", value: live.value?.pendingPickupOrders || 0, unit: "单", path: "/pickup/orders", permission: "pickup-order:read", mode: "pickup" }
+  { title: "营业中账单", description: "查看堂食、现场外带与自取账单", value: live.value?.openBills || 0, unit: "单", path: "/bills", permission: "bill:read", mode: "dine-in" },
+  { title: "自取待交付", description: "在统一账单中心处理顾客自取", value: live.value?.pendingPickupOrders || 0, unit: "单", path: "/bills", permission: "bill:read", mode: "pickup" }
 ].filter(item => hasPermission(item.permission)));
 async function load() {
   loading.value = true; loadError.value = "";

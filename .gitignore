@@ -30,6 +30,9 @@ pnpm-debug.log*
 .eslintcache
 .vite/
 
+# Agent validation and helper caches
+cache/
+
 # Operating system files
 .DS_Store
 Thumbs.db

@@ -8,7 +8,6 @@ import UnifiedOrderingView from "@/views/UnifiedOrderingView.vue";
 import BillsView from "@/views/BillsView.vue";
 import BillDetailView from "@/views/BillDetailView.vue";
 import ServeTasksView from "@/views/ServeTasksView.vue";
-import OrdersView from "@/views/OrdersView.vue";
 import ResourceView from "@/views/ResourceView.vue";
 import ReportsView from "@/views/ReportsView.vue";
 import AccountView from "@/views/AccountView.vue";
@@ -16,8 +15,6 @@ import StoreSettingsView from "@/views/StoreSettingsView.vue";
 import EmployeeAccessView from "@/views/EmployeeAccessView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
-import TablesView from "@/views/dine-in/TablesView.vue";
-import DineInOrdersView from "@/views/dine-in/DineInOrdersView.vue";
 import KitchenView from "@/views/dine-in/KitchenView.vue";
 
 const router = createRouter({
@@ -32,10 +29,7 @@ const router = createRouter({
         { path: "bills", name: "bills", component: BillsView, meta: { permission: "bill:read" } },
         { path: "bills/:id(\\d+)", name: "bill-detail", component: BillDetailView, meta: { permission: "bill:read" } },
         { path: "serve-tasks", name: "serve-tasks", component: ServeTasksView, meta: { permission: "serve-task:read" } },
-        { path: "dine-in/tables", name: "dine-in-tables", component: TablesView, meta: { permission: "dining-table:read" } },
-        { path: "dine-in/orders", name: "dine-in-orders", component: DineInOrdersView, meta: { permission: "dine-in-order:read" } },
         { path: "kitchen", name: "kitchen", component: KitchenView, meta: { permission: "kitchen-item:read" } },
-        { path: "pickup/orders", name: "pickup-orders", component: OrdersView, meta: { permission: "pickup-order:read" } },
         { path: "products/dishes", name: "dishes", component: ResourceView, props: { kind: "dishes" }, meta: { permission: "product:read" } },
         { path: "products/setmeals", name: "setmeals", component: ResourceView, props: { kind: "setmeals" }, meta: { permission: "product:read" } },
         { path: "products/categories", name: "categories", component: ResourceView, props: { kind: "categories" }, meta: { permission: "product:read" } },
@@ -47,8 +41,6 @@ const router = createRouter({
         { path: "forbidden", name: "forbidden", component: ForbiddenView }
       ]
     },
-    { path: "/orders", redirect: "/pickup/orders" },
-    { path: "/takeaway/orders", redirect: "/pickup/orders" },
     { path: "/dine-in/kitchen", redirect: "/kitchen" },
     { path: "/dishes", redirect: "/products/dishes" },
     { path: "/setmeals", redirect: "/products/setmeals" },

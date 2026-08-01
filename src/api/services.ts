@@ -2,9 +2,9 @@ import { http } from "./http";
 import type {
   ApiResult, AuthorizedStore, Bill, BillKitchenItem, BillQuote, BillServiceMode,
   BillStatus, BusinessData, BusinessMode, Category, CategoryPayload, DiningArea,
-  DiningTable, Dish, DishPayload, DineInOrder, DineInOverview, Employee,
-  EmployeePayload, EmployeeStoreAssignment, KitchenItem, MerchantSession,
-  OperationsLive, Order, OrderOverview, OrderStatistics, PageResult,
+  DiningTable, Dish, DishPayload, Employee,
+  EmployeePayload, EmployeeStoreAssignment, MerchantSession,
+  OperationsLive, OrderOverview, PageResult,
   PermissionDefinition, ProductOverview, Session, Setmeal, SetmealPayload,
   ShopBusinessSettings, StoreSwitchResult, TenantRole, WeeklyBusinessSchedule
 } from "@/types";
@@ -39,8 +39,6 @@ export const billApi = {
     return data<PageResult<Bill>>(http.get("/admin/bills", { params }));
   },
   detail: (id: number) => data<Bill>(http.get(`/admin/bills/${id}`)),
-  legacyDetail: (sourceType: string, sourceId: number) =>
-    data<Bill>(http.get(`/admin/bills/legacy/${sourceType}/${sourceId}`)),
   checkout: (id: number, body: { amount: number; paymentMethod: string; idempotencyKey: string }) =>
     data<Bill>(http.post(`/admin/bills/${id}/checkout`, body)),
   cancel: (id: number, reason: string) =>
@@ -55,10 +53,6 @@ export const billApi = {
     data<Bill>(http.put(`/admin/bills/${billId}/items/${itemId}/ready`)),
   serveItem: (billId: number, itemId: number) =>
     data<Bill>(http.put(`/admin/bills/${billId}/items/${itemId}/serve`))
-};
-export const serveTaskApi = {
-  list: () => data<KitchenItem[]>(http.get("/admin/serve/tasks")),
-  confirm: (id: number) => data<unknown>(http.put(`/admin/serve/tasks/${id}/confirm`))
 };
 export const rbacApi = {
   permissions: () => data<PermissionDefinition[]>(http.get("/admin/rbac/permissions")),
@@ -90,40 +84,9 @@ export const workspaceApi = {
   setBusinessMode: (mode: BusinessMode) =>
     data<unknown>(http.put(`/admin/shop/mode/${mode}`))
 };
-export const orderApi = {
-  page: (params: Record<string, unknown>) => data<PageResult<Order>>(http.get("/admin/order/conditionSearch", { params })),
-  statistics: async () => {
-    const stats = await data<Record<string, number>>(http.get("/admin/order/statistics"));
-    return {
-      toBeConfirmed: stats.toBeConfirmed || 0,
-      preparing: stats.preparing ?? stats.confirmed ?? 0,
-      readyForPickup: stats.readyForPickup ?? stats.deliveryInProgress ?? 0
-    } satisfies OrderStatistics;
-  },
-  detail: (id: number) => data<Order>(http.get(`/admin/order/details/${id}`)),
-  confirm: (id: number) => data<unknown>(http.put("/admin/order/confirm", { id })),
-  reject: (id: number, rejectionReason: string) => data<unknown>(http.put("/admin/order/rejection", { id, rejectionReason })),
-  cancel: (id: number, cancelReason: string) => data<unknown>(http.put("/admin/order/cancel", { id, cancelReason })),
-  readyForPickup: (id: number) => data<unknown>(http.put(`/admin/order/ready/${id}`)),
-  collected: (id: number) => data<unknown>(http.put(`/admin/order/collected/${id}`))
-};
 export const dineInApi = {
   areas: () => data<DiningArea[]>(http.get("/admin/dine-in/areas")),
-  tables: (params: Record<string, unknown> = {}) => data<DiningTable[]>(http.get("/admin/dine-in/tables", { params })),
-  openTable: (tableId: number, body: { guestCount: number; waiterId?: number; remark?: string }) => data<{ orderId: number; orderNo: string }>(http.post(`/admin/dine-in/tables/${tableId}/open`, body)),
-  orders: (params: Record<string, unknown>) => data<PageResult<DineInOrder>>(http.get("/admin/dine-in/orders", { params })),
-  orderDetail: (id: number) => data<DineInOrder>(http.get(`/admin/dine-in/orders/${id}`)),
-  addItems: (id: number, body: { items: Array<{ dishId?: number; setmealId?: number; quantity: number; remark?: string }> }) => data<unknown>(http.post(`/admin/dine-in/orders/${id}/items`, body)),
-  submitKitchen: (id: number) => data<unknown>(http.post(`/admin/dine-in/orders/${id}/submit-kitchen`)),
-  checkoutPreview: (id: number) => data<{ amount: number; discountAmount: number; payableAmount: number }>(http.post(`/admin/dine-in/orders/${id}/checkout-preview`, {})),
-  pay: (id: number, body: { paymentMethod: string; payableAmount: number; remark?: string }) => data<unknown>(http.post(`/admin/dine-in/orders/${id}/pay`, body)),
-  cancel: (id: number, reason: string) => data<unknown>(http.post(`/admin/dine-in/orders/${id}/cancel`, { reason })),
-  clearTable: (id: number) => data<unknown>(http.post(`/admin/dine-in/orders/${id}/clear-table`)),
-  kitchenItems: (params: Record<string, unknown> = {}) => data<KitchenItem[]>(http.get("/admin/dine-in/kitchen/items", { params })),
-  startItem: (id: number) => data<unknown>(http.put(`/admin/dine-in/kitchen/items/${id}/start`)),
-  readyItem: (id: number) => data<unknown>(http.put(`/admin/dine-in/kitchen/items/${id}/ready`)),
-  serveItem: (id: number) => data<unknown>(http.put(`/admin/dine-in/kitchen/items/${id}/serve`)),
-  overview: () => data<DineInOverview>(http.get("/admin/dine-in/dashboard/overview"))
+  tables: (params: Record<string, unknown> = {}) => data<DiningTable[]>(http.get("/admin/dine-in/tables", { params }))
 };
 export const resourceApi = {
   dishes: (params: Record<string, unknown>) => data<PageResult<Dish>>(http.get("/admin/dish/page", { params })),

@@ -12,9 +12,8 @@ const { hasPermission } = useMerchantSession();
 const loading = ref(false);
 const acting = ref("");
 const bill = ref<Bill>();
-const modeLabels: Record<string, string> = { DINE_IN: "堂食", TAKEOUT: "现场外带", PICKUP: "自取", DELIVERY: "配送" };
+const modeLabels: Record<string, string> = { DINE_IN: "堂食", TAKEOUT: "现场外带", PICKUP: "自取" };
 const modeLabel = computed(() => modeLabels[bill.value?.serviceMode || ""] || "待选择");
-const readonly = computed(() => bill.value?.sourceType && bill.value.sourceType !== "UNIFIED");
 const can = (permission: string) => bill.value?.allowedActions?.includes(permission) && hasPermission(permission);
 const canHandover = computed(() => bill.value?.serviceMode === "TAKEOUT"
   && bill.value.status === "READY" && bill.value.paymentStatus === "PAID" && hasPermission("bill:checkout"));
@@ -22,11 +21,7 @@ function money(value?: number) { return `¥${Number(value || 0).toFixed(2)}`; }
 async function load() {
   loading.value = true;
   try {
-    const sourceType = typeof route.query.sourceType === "string" ? route.query.sourceType : "";
-    const sourceId = Number(route.query.sourceId);
-    bill.value = sourceType && sourceId
-      ? await billApi.legacyDetail(sourceType, sourceId)
-      : await billApi.detail(Number(route.params.id));
+    bill.value = await billApi.detail(Number(route.params.id));
   }
   catch (error) { ElMessage.error(errorMessage(error)); }
   finally { loading.value = false; }
@@ -76,7 +71,6 @@ onMounted(load);
       <div><p class="eyebrow">BILL · {{ bill?.billNo || "LOADING" }}</p><h1>统一账单详情</h1><p>下一动作同时受服务端 allowedActions、账单状态和岗位权限约束。</p></div>
       <router-link class="button secondary" to="/bills">返回账单中心</router-link>
     </header>
-    <div v-if="readonly" class="readonly-banner">历史兼容账单只读展示，不提供收款、取消或履约动作。</div>
     <section v-if="bill" class="bill-status-rail">
       <div class="status-step done">01<br><strong>创建</strong></div>
       <div class="status-step" :class="{done:bill.status!=='DRAFT',current:bill.status==='DRAFT'}">02<br><strong>确认</strong></div>
