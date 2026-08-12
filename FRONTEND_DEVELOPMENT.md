@@ -35,7 +35,7 @@
 | 营业聚合 | 已实现 | 调用 `/api/merchant/v1/operations/live`，使用刷新式聚合 |
 | 统一账单草稿、报价、确认、查询与动作 | 已实现 | 调用真实接口并遵守 `allowedActions` |
 | 统一后厨与前厅上菜 | 已实现 | 调用真实接口，后厨不展示金额和顾客隐私 |
-| 堂食区域与桌台读取 | 已实现 | 仅调用 `/api/merchant/v1/dine-in/areas` 和 `/api/merchant/v1/dine-in/tables`；开台及后续流程进入统一账单 |
+| 堂食区域与桌台管理 | 已实现 | 营业台复用区域和桌台查询；`/tables` 使用桌台新增、修改和删除接口，写操作要求 `dining-table:manage` |
 | 商品、员工、权限、营业设置 | 已实现 | 调用真实接口并按动作级权限控制入口 |
 | 小程序统一 `PICKUP` 写入 | 开发中 | 商户端不创建；写入完成后直接进入统一账单中心 |
 | 报表 | 未知 | 禁用入口，不发送网络请求 |
@@ -56,6 +56,7 @@
 - `/products/*`：分类、菜品和套餐。
 - `/employees`、`/access`：员工资料及角色/门店授权。
 - `/store`、`/account`：门店营业设置和本人账号安全。
+- `/tables`：当前授权门店桌台查询、筛选、新增、修改、停用与删除。
 - `/reports`：接口未知的禁用说明。
 - `/forbidden`：无权限状态。
 
@@ -123,3 +124,11 @@
 - 本轮未执行运行验证和真实接口联调；桌面浏览器、移动端浏览器及真机均未验证。
 - 商户请求统一迁移到 `/api/merchant/v1/**`，服务层相对 `VITE_API_BASE=/api` 使用 `/merchant/v1/**`；Axios 地址组合验证结果为 `/api/merchant/v1/session/me`。
 - 路径迁移后 `npm run build` 通过（包含类型检查）；仍存在单个主 JS chunk 超过 500 kB 的既有性能提醒，未执行浏览器和真实账号联调。
+
+### 2026-08-12
+
+- 新增 `/tables` 桌台管理页，在现有商户外壳和 Element Plus 规范内提供区域/状态/关键字筛选、新增、编辑、停用和删除入口。
+- 写操作严格依赖服务端 `dining-table:manage` 权限；营业中、待清台、预留或有关联数据的桌台展示不可维护状态，并保留服务端 409 提示。
+- 接口接入 `POST /api/merchant/v1/dine-in/tables`、`PUT/DELETE /api/merchant/v1/dine-in/tables/{id}`，列表继续复用现有实时查询。
+- `npm run typecheck`、`npm run build` 通过；仍有单个主 JS chunk 超过 500 kB 的既有提醒。
+- 生产预览 `http://127.0.0.1:4181/` 与直接访问 `/tables` 均返回 200；未执行真实账号写接口联调和浏览器交互巡检，后端进程与开发库未由本轮重启或初始化。

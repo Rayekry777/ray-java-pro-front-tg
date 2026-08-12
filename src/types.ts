@@ -17,7 +17,9 @@ export interface EmployeePayload { id?: number; username: string; name: string; 
 export type TableStatus = "AVAILABLE" | "OCCUPIED" | "WAIT_CHECKOUT" | "RESERVED" | "DISABLED";
 export type KitchenItemStatus = "PENDING" | "COOKING" | "READY" | "SERVED" | "RETURNED" | "CANCELLED";
 export interface DiningArea { id: number; name: string; sort: number }
-export interface DiningTable { id: number; areaId: number; areaName: string; tableNo: string; name: string; capacity: number; status: TableStatus; currentBillId?: number; guestCount?: number; openedAt?: string }
+export interface DiningTable { id: number; areaId: number; areaName: string; tableNo: string; name: string; capacity: number; sort: number; status: TableStatus; currentBillId?: number; guestCount?: number; openedAt?: string; version: number; allowedActions?: string[] }
+export interface DiningTableCreatePayload { areaId: number; tableNo: string; name: string; capacity: number; sort: number; status: "AVAILABLE" | "DISABLED" }
+export interface DiningTableUpdatePayload extends DiningTableCreatePayload { version: number }
 export type BusinessMode = "AUTO" | "MANUAL_OPEN" | "MANUAL_CLOSED";
 export type BusinessDay = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
 export interface BusinessTimeSlot { start: string; end: string }

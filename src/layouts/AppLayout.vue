@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import {
-  Avatar, CloseBold, DataAnalysis, Dish, Food, HomeFilled, List,
+  Avatar, CloseBold, DataAnalysis, Dish, Food, Grid, HomeFilled, List,
   Menu, Operation, Refresh, Setting, Shop, SwitchButton, Tickets, UserFilled
 } from "@element-plus/icons-vue";
 import { authApi } from "@/api/services";
@@ -34,6 +34,7 @@ const navItems = computed(() => [
   { path: "/bills", label: "账单中心", icon: List, permission: "bill:read" },
   { path: "/kitchen", label: "后厨出餐", icon: Food, permission: "kitchen-item:read" },
   { path: "/products/dishes", label: "商品管理", icon: Dish, permission: "product:read" },
+  { path: "/tables", label: "桌台管理", icon: Grid, permission: "dining-table:read" },
   {
     path: merchantSession.hasPermission("rbac:manage") ? "/access" : "/employees",
     label: "员工权限",
@@ -122,6 +123,7 @@ async function logout() {
               <el-dropdown-menu>
                 <el-dropdown-item :icon="Avatar" @click="router.push('/account')">账号安全</el-dropdown-item>
                 <el-dropdown-item v-if="merchantSession.hasPermission('shop:manage')" :icon="Setting" @click="router.push('/store')">门店营业设置</el-dropdown-item>
+                <el-dropdown-item v-if="merchantSession.hasPermission('dining-table:read')" :icon="Grid" @click="router.push('/tables')">桌台管理</el-dropdown-item>
                 <el-dropdown-item divided :icon="SwitchButton" @click="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>

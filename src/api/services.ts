@@ -2,7 +2,7 @@ import { http } from "./http";
 import type {
   ApiResult, AuthorizedStore, Bill, BillKitchenItem, BillQuote, BillServiceMode,
   BillStatus, BusinessData, BusinessMode, Category, CategoryPayload, DiningArea,
-  DiningTable, Dish, DishPayload, Employee,
+  DiningTable, DiningTableCreatePayload, DiningTableUpdatePayload, Dish, DishPayload, Employee,
   EmployeePayload, EmployeeStoreAssignment, MerchantSession,
   OperationsLive, OrderOverview, PageResult,
   PermissionDefinition, ProductOverview, Session, Setmeal, SetmealPayload,
@@ -86,7 +86,10 @@ export const workspaceApi = {
 };
 export const dineInApi = {
   areas: () => data<DiningArea[]>(http.get("/merchant/v1/dine-in/areas")),
-  tables: (params: Record<string, unknown> = {}) => data<DiningTable[]>(http.get("/merchant/v1/dine-in/tables", { params }))
+  tables: (params: Record<string, unknown> = {}) => data<DiningTable[]>(http.get("/merchant/v1/dine-in/tables", { params })),
+  createTable: (body: DiningTableCreatePayload) => data<number>(http.post("/merchant/v1/dine-in/tables", body)),
+  updateTable: (id: number, body: DiningTableUpdatePayload) => data<unknown>(http.put(`/merchant/v1/dine-in/tables/${id}`, body)),
+  deleteTable: (id: number) => data<unknown>(http.delete(`/merchant/v1/dine-in/tables/${id}`))
 };
 export const resourceApi = {
   dishes: (params: Record<string, unknown>) => data<PageResult<Dish>>(http.get("/merchant/v1/dish/page", { params })),

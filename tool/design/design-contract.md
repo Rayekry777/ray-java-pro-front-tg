@@ -161,6 +161,7 @@ verification:
 | 统一堂食清台 | `POST /api/merchant/v1/bills/{id}/clear-table` | implemented | 仅已支付且全部上桌的堂食账单可执行 |
 | 统一外带交付 | `PUT /api/merchant/v1/bills/{id}/handover` | implemented | 仅已支付且制作完成的 `TAKEOUT` 可交付 |
 | 堂食区域与桌台 | `GET /api/merchant/v1/dine-in/areas`、`GET /api/merchant/v1/dine-in/tables` | implemented | 营业台桌台区真实数据 |
+| 桌台配置维护 | `POST /api/merchant/v1/dine-in/tables`、`PUT/DELETE /api/merchant/v1/dine-in/tables/{id}` | implemented | 复用管理端表格、筛选、弹窗和状态标签；写操作要求 `dining-table:manage` |
 | 开台 | `POST /api/merchant/v1/dine-in/tables/{tableId}/open` | implemented | 在当前桌上下文继续点餐，不跳列表页 |
 | 堂食订单与明细 | `GET /api/merchant/v1/dine-in/orders`、`GET /api/merchant/v1/dine-in/orders/{id}` | implemented | 活跃订单在营业台处理，分页页只承担历史和异常查询 |
 | 加菜与提交后厨 | `POST /api/merchant/v1/dine-in/orders/{id}/items`、`POST /api/merchant/v1/dine-in/orders/{id}/submit-kitchen` | implemented | 后加菜必须持续显示“下厨 N 项”，不能按聚合状态隐藏 |
@@ -212,6 +213,7 @@ verification:
 | 角色权限 | 查看系统角色和自定义角色 | 侧栏 → 角色详情 → 保存 | 1440/1366/1024 | 权限目录加载、系统角色只读、越权、冲突 |
 | 商品管理 | 管理分类、菜品、套餐和起售状态 | 侧栏 → 商品列表/编辑 | 1440/1366/1024 | 加载、空、搜索、停售、关联冲突、无权限 |
 | 门店营业设置 | 管理营业状态、模式和周时段 | 会话菜单/侧栏 → 门店设置 | 1440/1366/1024 | 自动、手动营业、手动打烊、跨日时段、保存冲突 |
+| 桌台管理 | 维护当前门店桌号、区域、人数和启停状态 | 侧栏/会话菜单 → 桌台列表 → 新增或编辑 | 1440/1366/1024 | 加载、空、错误、只读、占用不可编辑、关联数据不可删除、乐观锁冲突 |
 | 账号安全 | 修改本人密码并退出所有旧会话 | 会话菜单 → 修改密码 → 登录 | 全尺寸 | 当前密码错误、新密码校验、提交、成功退出 |
 | 接口覆盖 | 评审页面与当前 Controller 路由的预留关系 | 设计系统/状态矩阵 → 覆盖清单 | 1440/1024 | 已实现、开发中、未知、兼容只读 |
 | 报表占位 | 说明接口证据不足 | 侧栏禁用入口 | 全尺寸 | 未知、不可点击、不发请求 |

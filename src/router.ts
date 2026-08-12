@@ -12,6 +12,7 @@ import ResourceView from "@/views/ResourceView.vue";
 import ReportsView from "@/views/ReportsView.vue";
 import AccountView from "@/views/AccountView.vue";
 import StoreSettingsView from "@/views/StoreSettingsView.vue";
+import DiningTablesView from "@/views/DiningTablesView.vue";
 import EmployeeAccessView from "@/views/EmployeeAccessView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
@@ -36,6 +37,7 @@ const router = createRouter({
         { path: "employees", name: "employees", component: ResourceView, props: { kind: "employees" }, meta: { permission: "employee:read" } },
         { path: "access", name: "access", component: EmployeeAccessView, meta: { permission: "rbac:manage" } },
         { path: "store", name: "store", component: StoreSettingsView, meta: { permission: "shop:manage" } },
+        { path: "tables", name: "tables", component: DiningTablesView, meta: { permission: "dining-table:read" } },
         { path: "account", name: "account", component: AccountView },
         { path: "reports", name: "reports", component: ReportsView, meta: { permission: "report:read" } },
         { path: "forbidden", name: "forbidden", component: ForbiddenView }
