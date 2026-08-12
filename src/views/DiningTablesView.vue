@@ -19,19 +19,14 @@ const query = reactive<{ areaId?: number; status: TableStatus | ""; keyword: str
 let loadVersion = 0;
 
 const statusMeta: Record<TableStatus, { label: string; type: "success" | "warning" | "danger" | "info" }> = {
-  AVAILABLE: { label: "可用", type: "success" },
-  OCCUPIED: { label: "使用中", type: "warning" },
-  WAIT_CHECKOUT: { label: "待清台", type: "danger" },
-  RESERVED: { label: "已预留", type: "warning" },
+  ENABLED: { label: "已启用", type: "success" },
   DISABLED: { label: "已停用", type: "info" }
 };
 function tableStatusMeta(status: TableStatus) {
   return statusMeta[status];
 }
 
-function configurable(table: DiningTable) {
-  return !table.currentBillId && (table.status === "AVAILABLE" || table.status === "DISABLED");
-}
+function configurable(_table: DiningTable) { return true; }
 async function load() {
   const version = ++loadVersion;
   loading.value = true;
@@ -58,18 +53,10 @@ function createTable() {
   dialogVisible.value = true;
 }
 function editTable(table: DiningTable) {
-  if (!configurable(table)) {
-    ElMessage.warning("该桌台正在营业、待清台或已预留，暂不能编辑");
-    return;
-  }
   editing.value = table;
   dialogVisible.value = true;
 }
 async function deleteTable(table: DiningTable) {
-  if (!configurable(table)) {
-    ElMessage.warning("该桌台当前不能删除");
-    return;
-  }
   try {
     await ElMessageBox.confirm(
       `确定删除 ${table.areaName} · ${table.tableNo} 吗？存在扫码入口或历史堂食记录时，服务端会拒绝删除。`,
@@ -95,8 +82,7 @@ onMounted(load);
 
     <section class="panel table-summary">
       <div><span>全部桌台</span><strong>{{ rows.length }}</strong></div>
-      <div><span>当前可用</span><strong>{{ rows.filter(row => row.status === 'AVAILABLE').length }}</strong></div>
-      <div><span>营业占用</span><strong>{{ rows.filter(row => row.status === 'OCCUPIED' || row.status === 'WAIT_CHECKOUT').length }}</strong></div>
+      <div><span>已启用</span><strong>{{ rows.filter(row => row.status === 'ENABLED').length }}</strong></div>
       <div><span>已停用</span><strong>{{ rows.filter(row => row.status === 'DISABLED').length }}</strong></div>
     </section>
 
@@ -120,11 +106,10 @@ onMounted(load);
         <el-table-column prop="capacity" label="容纳人数" width="110"><template #default="{ row }">{{ row.capacity }} 人</template></el-table-column>
         <el-table-column prop="sort" label="排序" width="90" />
         <el-table-column label="状态" width="110"><template #default="{ row }"><el-tag :type="tableStatusMeta(row.status).type">{{ tableStatusMeta(row.status).label }}</el-tag></template></el-table-column>
-        <el-table-column label="当前业务" min-width="150"><template #default="{ row }"><span v-if="row.currentBillId">账单 #{{ row.currentBillId }}<template v-if="row.guestCount"> · {{ row.guestCount }} 人</template></span><span v-else class="muted">无占用</span></template></el-table-column>
         <el-table-column label="操作" :width="canManage ? 150 : 90" fixed="right"><template #default="{ row }"><template v-if="canManage"><el-button link type="primary" :disabled="!configurable(row)" @click="editTable(row)">编辑</el-button><el-button link type="danger" :disabled="!configurable(row)" @click="deleteTable(row)">删除</el-button></template><span v-else class="muted">只读</span></template></el-table-column>
       </el-table>
     </section>
-    <p v-if="canManage" class="table-maintenance-hint">有扫码入口或历史堂食记录的桌台请改为“停用”，系统会保留业务追溯关系。</p>
+    <p v-if="canManage" class="table-maintenance-hint">有扫码入口或历史订单的桌台请改为“停用”，系统会保留业务追溯关系。</p>
 
     <DiningTableFormDialog v-model="dialogVisible" :areas="areas" :table="editing" @saved="load" />
   </div>

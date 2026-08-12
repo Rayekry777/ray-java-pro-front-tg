@@ -42,7 +42,7 @@ onMounted(load);
       </article>
       <article class="mode-card" :class="{selected:settings?.mode==='AUTO'}"><span class="tag">自动营业</span><h3>跟随周营业时间</h3><p>系统按配置时段自动判断营业状态。</p></article>
       <article class="mode-card" :class="{selected:settings?.mode==='MANUAL_OPEN'}"><span class="tag ok">强制营业</span><h3>忽略营业时段</h3><p>适用于临时延长营业或特殊活动。</p></article>
-      <article class="mode-card" :class="{selected:settings?.mode==='MANUAL_CLOSED'}"><span class="tag warn">强制打烊</span><h3>暂停接收新业务</h3><p>已有订单仍可继续制作和交付。</p></article>
+      <article class="mode-card" :class="{selected:settings?.mode==='MANUAL_CLOSED'}"><span class="tag warn">强制打烊</span><h3>暂停接收新订单</h3><p>已有订单仍可在订单中心查看。</p></article>
     </section>
     <section class="panel schedule-panel">
       <div class="section-title"><div><p class="eyebrow">WEEKLY SCHEDULE</p><h2>周营业时间</h2></div><span class="tag">{{ settings?.mode === "AUTO" ? "自动生效" : "当前由手动模式覆盖" }}</span></div>

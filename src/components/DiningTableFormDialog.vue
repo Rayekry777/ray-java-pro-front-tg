@@ -19,7 +19,7 @@ const form = reactive<DiningTableUpdatePayload>({
   name: "",
   capacity: 4,
   sort: 0,
-  status: "AVAILABLE",
+  status: "ENABLED",
   version: 0
 });
 const rules: FormRules = {
@@ -38,7 +38,7 @@ function initialize() {
     name: props.table.name,
     capacity: props.table.capacity,
     sort: props.table.sort,
-    status: props.table.status === "DISABLED" ? "DISABLED" : "AVAILABLE",
+    status: props.table.status,
     version: props.table.version
   } : {
     areaId: props.areas[0]?.id || 0,
@@ -46,7 +46,7 @@ function initialize() {
     name: "",
     capacity: 4,
     sort: 0,
-    status: "AVAILABLE",
+    status: "ENABLED",
     version: 0
   });
   nextTick(() => formRef.value?.clearValidate());
@@ -96,10 +96,10 @@ watch(() => props.modelValue, value => { if (value) initialize(); });
       </div>
       <el-form-item label="维护状态" prop="status">
         <el-radio-group v-model="form.status">
-          <el-radio-button value="AVAILABLE">可用</el-radio-button>
+          <el-radio-button value="ENABLED">启用</el-radio-button>
           <el-radio-button value="DISABLED">停用</el-radio-button>
         </el-radio-group>
-        <small class="table-form-hint">营业中、待清台和已预留状态由业务流程维护，不能在这里手动设置。</small>
+        <small class="table-form-hint">桌台只表示是否允许扫码下单，不记录订单占用状态。</small>
       </el-form-item>
     </el-form>
     <template #footer>

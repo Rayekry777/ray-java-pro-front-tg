@@ -25,9 +25,7 @@ async function submit() {
     merchantSession.resetMerchantSession();
     const current = await merchantSession.loadSession(true);
     const target = {
-      KITCHEN: "/kitchen",
-      DINE_IN_SERVICE: "/serve-tasks",
-      OPERATIONS: "/operations",
+      ORDERS: "/orders",
       OVERVIEW: "/"
     }[current.suggestedWorkspace] || "/";
     await router.replace(target);
@@ -39,8 +37,8 @@ async function submit() {
   <div class="login-page login">
     <section class="login-hero">
       <div class="login-brand"><div class="hero-mark">R</div><strong>RAY 运营台</strong></div>
-      <p>RESTAURANT OPERATIONS</p><h1>让每一份出餐<br>都有秩序。</h1>
-      <span>统一开单、制作、上菜、收款和交付，在同一个门店上下文完成闭环。</span>
+      <p>RESTAURANT ORDERS</p><h1>让每一笔订单<br>都清晰可查。</h1>
+      <span>查看顾客提交的独立订单，并维护当前门店的桌台与商品。</span>
     </section>
     <section class="login-panel">
       <div class="login-box">

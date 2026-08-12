@@ -161,7 +161,7 @@ onMounted(load);
             <p>{{ role.description || "暂无说明" }}</p>
             <div class="role-permission-preview"><span v-for="permission in role.permissions.slice(0,6)" :key="permission">{{ permission }}</span><small v-if="role.permissions.length>6">+{{ role.permissions.length-6 }}</small></div>
             <footer v-if="!role.systemRole"><el-button link type="primary" @click="openRole(role)">编辑</el-button><el-button link type="danger" @click="deleteRole(role)">删除</el-button></footer>
-            <footer v-else><small>系统岗位只读，保持五类岗位基线</small></footer>
+            <footer v-else><small>系统岗位只读，保持三类岗位基线</small></footer>
           </article>
         </section>
       </el-tab-pane>

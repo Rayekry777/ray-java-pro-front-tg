@@ -3,8 +3,8 @@ import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import {
-  Avatar, CloseBold, DataAnalysis, Dish, Food, Grid, HomeFilled, List,
-  Menu, Operation, Refresh, Setting, Shop, SwitchButton, Tickets, UserFilled
+  Avatar, CloseBold, DataAnalysis, Dish, Grid, HomeFilled, List,
+  Menu, Refresh, Setting, Shop, SwitchButton, UserFilled
 } from "@element-plus/icons-vue";
 import { authApi } from "@/api/services";
 import { errorMessage } from "@/api/http";
@@ -22,17 +22,12 @@ const session = merchantSession.session;
 const roleLabels: Record<string, string> = {
   TENANT_OWNER: "租户负责人",
   STORE_MANAGER: "门店经理",
-  CASHIER: "前台 / 收银员",
-  WAITER: "服务员",
-  KITCHEN: "后厨"
+  WAITER: "服务员"
 };
 const primaryRoleLabel = computed(() => session.value?.roles.map(role => roleLabels[role] || role).join(" / ") || "当前员工");
 const navItems = computed(() => [
-  { path: "/", label: "经营总览", icon: HomeFilled, permission: "operations:read" },
-  { path: "/operations", label: "统一营业台", icon: Operation, permission: "bill:create" },
-  { path: "/serve-tasks", label: "当前任务", icon: Tickets, permission: "serve-task:read" },
-  { path: "/bills", label: "账单中心", icon: List, permission: "bill:read" },
-  { path: "/kitchen", label: "后厨出餐", icon: Food, permission: "kitchen-item:read" },
+  { path: "/", label: "订单总览", icon: HomeFilled, permission: "order:read" },
+  { path: "/orders", label: "订单中心", icon: List, permission: "order:read" },
   { path: "/products/dishes", label: "商品管理", icon: Dish, permission: "product:read" },
   { path: "/tables", label: "桌台管理", icon: Grid, permission: "dining-table:read" },
   {
@@ -111,7 +106,7 @@ async function logout() {
     <section class="app-main">
       <header class="topbar production-topbar">
         <button class="plain-icon mobile-menu" aria-label="切换导航" @click="collapsed=!collapsed"><el-icon><component :is="collapsed?Menu:CloseBold"/></el-icon></button>
-        <div class="live aggregate-label"><i class="live-dot"></i><span>营业聚合 · 会话已就绪</span></div>
+        <div class="live aggregate-label"><i class="live-dot"></i><span>订单只读 · 会话已就绪</span></div>
         <div class="top-actions">
           <button class="store-switch-button" type="button" @click="openStores">{{ session?.activeStore.name }}⌄</button>
           <button class="plain-icon" aria-label="刷新当前页面" @click="router.go(0)"><el-icon><Refresh/></el-icon></button>

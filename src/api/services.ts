@@ -1,10 +1,9 @@
 import { http } from "./http";
 import type {
-  ApiResult, AuthorizedStore, Bill, BillKitchenItem, BillQuote, BillServiceMode,
-  BillStatus, BusinessData, BusinessMode, Category, CategoryPayload, DiningArea,
+  ApiResult, AuthorizedStore, BusinessData, BusinessMode, Category, CategoryPayload, DiningArea,
   DiningTable, DiningTableCreatePayload, DiningTableUpdatePayload, Dish, DishPayload, Employee,
   EmployeePayload, EmployeeStoreAssignment, MerchantSession,
-  OperationsLive, OrderOverview, PageResult,
+  FoodOrder, OrderOverview, OrderServiceMode, OrderSummary, PageResult,
   PermissionDefinition, ProductOverview, Session, Setmeal, SetmealPayload,
   ShopBusinessSettings, StoreSwitchResult, TenantRole, WeeklyBusinessSchedule
 } from "@/types";
@@ -21,38 +20,17 @@ export const sessionApi = {
   changePassword: (body: { oldPassword: string; newPassword: string }) =>
     data<unknown>(http.put("/merchant/v1/session/password", body))
 };
-export const operationsApi = {
-  live: () => data<OperationsLive>(http.get("/merchant/v1/operations/live"))
-};
-export const billApi = {
-  createDraft: (remark?: string) => data<Bill>(http.post("/merchant/v1/bills/drafts", remark ? { remark } : {})),
-  replaceItems: (id: number, items: Array<{ dishId?: number; setmealId?: number; quantity: number; remark?: string }>) =>
-    data<Bill>(http.put(`/merchant/v1/bills/drafts/${id}/items`, { items })),
-  quote: (id: number, body: { serviceMode: "DINE_IN" | "TAKEOUT"; tableId?: number; guestCount?: number }) =>
-    data<BillQuote>(http.post(`/merchant/v1/bills/drafts/${id}/quote`, body)),
-  confirm: (id: number, body: { quoteId: string; idempotencyKey: string }) =>
-    data<Bill>(http.post(`/merchant/v1/bills/drafts/${id}/confirm`, body)),
-  page: (query: { page: number; size: number; serviceMode?: BillServiceMode | ""; status?: BillStatus | "" }) => {
+export const orderApi = {
+  summary: () => data<OrderSummary>(http.get("/merchant/v1/orders/summary")),
+  page: (query: { page: number; size: number; serviceMode?: OrderServiceMode | ""; orderStatus?: string; paymentStatus?: string; keyword?: string }) => {
     const params: Record<string, unknown> = { page: query.page, size: query.size };
     if (query.serviceMode) params.serviceMode = query.serviceMode;
-    if (query.status) params.status = query.status;
-    return data<PageResult<Bill>>(http.get("/merchant/v1/bills", { params }));
+    if (query.orderStatus) params.orderStatus = query.orderStatus;
+    if (query.paymentStatus) params.paymentStatus = query.paymentStatus;
+    if (query.keyword) params.keyword = query.keyword;
+    return data<PageResult<FoodOrder>>(http.get("/merchant/v1/orders", { params }));
   },
-  detail: (id: number) => data<Bill>(http.get(`/merchant/v1/bills/${id}`)),
-  checkout: (id: number, body: { amount: number; paymentMethod: string; idempotencyKey: string }) =>
-    data<Bill>(http.post(`/merchant/v1/bills/${id}/checkout`, body)),
-  cancel: (id: number, reason: string) =>
-    data<Bill>(http.post(`/merchant/v1/bills/${id}/cancel`, { reason })),
-  clearTable: (id: number) => data<Bill>(http.post(`/merchant/v1/bills/${id}/clear-table`)),
-  handover: (id: number) => data<Bill>(http.put(`/merchant/v1/bills/${id}/handover`)),
-  kitchenItems: (status?: string) =>
-    data<BillKitchenItem[]>(http.get("/merchant/v1/bills/kitchen/items", { params: status ? { status } : {} })),
-  startItem: (billId: number, itemId: number) =>
-    data<Bill>(http.put(`/merchant/v1/bills/${billId}/items/${itemId}/start`)),
-  readyItem: (billId: number, itemId: number) =>
-    data<Bill>(http.put(`/merchant/v1/bills/${billId}/items/${itemId}/ready`)),
-  serveItem: (billId: number, itemId: number) =>
-    data<Bill>(http.put(`/merchant/v1/bills/${billId}/items/${itemId}/serve`))
+  detail: (id: number) => data<FoodOrder>(http.get(`/merchant/v1/orders/${id}`))
 };
 export const rbacApi = {
   permissions: () => data<PermissionDefinition[]>(http.get("/merchant/v1/rbac/permissions")),

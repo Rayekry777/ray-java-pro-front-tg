@@ -14,11 +14,10 @@ export interface Category { id: number; name: string; type: number; sort: number
 export interface Employee { id: number; username: string; name: string; phone: string; sex: string; idNumber: string; status: number; updateTime: string }
 export interface CategoryPayload { id?: number; name: string; type: number; sort: number }
 export interface EmployeePayload { id?: number; username: string; name: string; phone: string; sex: string; idNumber: string }
-export type TableStatus = "AVAILABLE" | "OCCUPIED" | "WAIT_CHECKOUT" | "RESERVED" | "DISABLED";
-export type KitchenItemStatus = "PENDING" | "COOKING" | "READY" | "SERVED" | "RETURNED" | "CANCELLED";
+export type TableStatus = "ENABLED" | "DISABLED";
 export interface DiningArea { id: number; name: string; sort: number }
-export interface DiningTable { id: number; areaId: number; areaName: string; tableNo: string; name: string; capacity: number; sort: number; status: TableStatus; currentBillId?: number; guestCount?: number; openedAt?: string; version: number; allowedActions?: string[] }
-export interface DiningTableCreatePayload { areaId: number; tableNo: string; name: string; capacity: number; sort: number; status: "AVAILABLE" | "DISABLED" }
+export interface DiningTable { id: number; areaId: number; areaName: string; tableNo: string; name: string; capacity: number; sort: number; status: TableStatus; version: number }
+export interface DiningTableCreatePayload { areaId: number; tableNo: string; name: string; capacity: number; sort: number; status: TableStatus }
 export interface DiningTableUpdatePayload extends DiningTableCreatePayload { version: number }
 export type BusinessMode = "AUTO" | "MANUAL_OPEN" | "MANUAL_CLOSED";
 export type BusinessDay = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
@@ -56,24 +55,20 @@ export interface MerchantSession {
   authorizedStores: AuthorizedStore[];
   roles: string[];
   permissions: string[];
-  suggestedWorkspace: "KITCHEN" | "DINE_IN_SERVICE" | "OPERATIONS" | "OVERVIEW";
+  suggestedWorkspace: "ORDERS" | "OVERVIEW";
 }
 export interface StoreSwitchResult { storeId: number; token: string }
-export interface OperationsLive {
-  occupiedTables: number;
-  pendingKitchenItems: number;
-  readyToServeItems: number;
-  openBills: number;
-  pendingPickupOrders: number;
+export interface OrderSummary {
+  todayOrders: number;
+  dineInOrders: number;
+  pickupOrders: number;
+  unpaidOrders: number;
+  paidAmount: number;
   updatedAt: string;
   version: number;
 }
-export type BillServiceMode = "DINE_IN" | "TAKEOUT" | "PICKUP";
-export type BillStatus =
-  | "DRAFT" | "CONFIRMED" | "DINING" | "WAIT_KITCHEN" | "COOKING"
-  | "READY" | "SERVED" | "WAIT_CHECKOUT" | "PAID" | "COMPLETED"
-  | "CANCELLED" | "REFUNDED";
-export interface BillItem {
+export type OrderServiceMode = "DINE_IN" | "PICKUP";
+export interface FoodOrderItem {
   id: number;
   dishId?: number | null;
   setmealId?: number | null;
@@ -82,50 +77,30 @@ export interface BillItem {
   quantity: number;
   price: number;
   amount: number;
-  status: string;
+  dishFlavor?: string | null;
   remark?: string | null;
 }
-export interface Bill {
+export interface FoodOrder {
   id: number;
-  sourceType: string;
-  sourceId?: number | null;
-  billNo: string;
-  orderSource: string;
-  serviceMode?: BillServiceMode | null;
-  status: BillStatus;
+  orderNo: string;
+  serviceMode: OrderServiceMode;
+  orderStatus: "PLACED" | "CANCELLED";
   paymentStatus: "UNPAID" | "PAID" | "REFUNDED";
   amount: number;
   discountAmount: number;
   payableAmount: number;
   tableId?: number | null;
-  guestCount?: number | null;
+  tableNo?: string | null;
+  tableName?: string | null;
+  areaName?: string | null;
+  pickupName?: string | null;
+  pickupPhone?: string | null;
+  pickupTime?: string | null;
   remark?: string | null;
-  version: number;
+  placedAt: string;
+  paidAt?: string | null;
   createTime: string;
-  confirmedAt?: string | null;
-  items: BillItem[];
-  allowedActions: string[];
-}
-export interface BillQuote {
-  billId: number;
-  quoteId: string;
-  version: number;
-  amount: number;
-  discountAmount: number;
-  payableAmount: number;
-  expiresAt: string;
-}
-export interface BillKitchenItem {
-  id: number;
-  billId: number;
-  billNo: string;
-  serviceMode: "DINE_IN" | "TAKEOUT";
-  tableId?: number | null;
-  name: string;
-  quantity: number;
-  status: KitchenItemStatus;
-  remark?: string | null;
-  submittedAt: string;
+  items: FoodOrderItem[];
 }
 export interface TenantRole {
   id: number;
