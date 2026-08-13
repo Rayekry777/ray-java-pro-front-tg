@@ -23,7 +23,9 @@ onMounted(load);
         <div><span>下单时间</span><strong>{{ order.placedAt }}</strong></div>
         <div><span>应付金额</span><strong>¥{{ Number(order.payableAmount).toFixed(2) }}</strong></div>
       </section>
-      <section class="panel"><h2>商品明细</h2><el-table :data="order.items"><el-table-column prop="name" label="商品"/><el-table-column prop="dishFlavor" label="口味"/><el-table-column prop="quantity" label="数量" width="90"/><el-table-column label="金额" width="120"><template #default="{row}">¥{{ Number(row.amount).toFixed(2) }}</template></el-table-column><el-table-column prop="remark" label="备注"/></el-table></section>
+      <section class="panel order-items-panel"><h2>商品明细</h2><el-table class="desktop-data-table" :data="order.items"><el-table-column prop="name" label="商品"/><el-table-column prop="dishFlavor" label="口味"/><el-table-column prop="quantity" label="数量" width="90"/><el-table-column label="金额" width="120"><template #default="{row}">¥{{ Number(row.amount).toFixed(2) }}</template></el-table-column><el-table-column prop="remark" label="备注"/></el-table>
+        <div class="mobile-order-items"><article v-for="item in order.items" :key="item.id" class="mobile-order-item"><div><strong>{{ item.name }}</strong><small>{{ item.dishFlavor || item.remark || "标准口味" }}</small></div><span>× {{ item.quantity }}</span><b>¥{{ Number(item.amount).toFixed(2) }}</b></article></div>
+      </section>
     </template>
   </div>
 </template>

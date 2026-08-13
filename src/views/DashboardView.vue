@@ -15,7 +15,7 @@ onMounted(load);
 </script>
 <template>
   <div class="page production-overview" v-loading="loading">
-    <header class="page-head"><div><p class="eyebrow">RAY · READ ONLY</p><h1>经营总览</h1><p>查看当前门店今日订单汇总。</p></div><div class="title-actions"><span class="aggregate-freshness"><i></i>{{ freshness }} 更新</span><el-button @click="load">刷新</el-button></div></header>
+    <header class="page-head"><div><p class="eyebrow">ray-tg · READ ONLY</p><h1>经营总览</h1><p>查看当前门店今日订单汇总。</p></div><div class="title-actions"><span class="aggregate-freshness"><i></i>{{ freshness }} 更新</span><el-button @click="load">刷新</el-button></div></header>
     <el-alert v-if="loadError" title="订单汇总加载失败" :description="loadError" type="error" show-icon :closable="false"/>
     <section class="stats overview-stats">
       <router-link class="stat" to="/orders"><span>今日订单</span><strong>{{ summary?.todayOrders || 0 }}<em>单</em></strong></router-link>

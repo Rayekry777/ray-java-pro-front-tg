@@ -30,7 +30,7 @@ onMounted(load);
       <el-select v-model="query.paymentStatus" placeholder="支付状态" clearable><el-option label="未支付" value="UNPAID"/><el-option label="已支付" value="PAID"/><el-option label="已退款" value="REFUNDED"/></el-select>
       <el-button type="primary" @click="query.page=1;load()">查询</el-button>
     </section>
-    <section class="panel">
+    <section class="panel desktop-data-table">
       <el-table :data="page.records">
         <el-table-column prop="orderNo" label="订单号" min-width="190"/>
         <el-table-column label="方式" width="90"><template #default="{row}">{{ modeLabel(row.serviceMode) }}</template></el-table-column>
@@ -42,6 +42,20 @@ onMounted(load);
         <el-table-column label="详情" width="90"><template #default="{row}"><router-link :to="`/orders/${row.id}`">查看</router-link></template></el-table-column>
       </el-table>
       <el-pagination v-model:current-page="query.page" v-model:page-size="query.size" :total="page.total" layout="total, prev, pager, next" @current-change="load"/>
+    </section>
+    <section class="mobile-card-list" aria-label="订单列表">
+      <router-link v-for="row in page.records" :key="row.id" class="mobile-data-card" :to="`/orders/${row.id}`">
+        <header><strong>{{ row.orderNo }}</strong><span class="service-chip">{{ modeLabel(row.serviceMode) }}</span></header>
+        <p>{{ row.serviceMode==='DINE_IN' ? (row.tableName || row.tableNo) : (row.pickupName || '到店自取') }}</p>
+        <dl>
+          <div><dt>订单</dt><dd>{{ orderLabel(row.orderStatus) }}</dd></div>
+          <div><dt>支付</dt><dd>{{ paymentLabel(row.paymentStatus) }}</dd></div>
+          <div><dt>金额</dt><dd class="money">¥{{ Number(row.payableAmount).toFixed(2) }}</dd></div>
+        </dl>
+        <footer><time>{{ row.placedAt }}</time><span>查看详情</span></footer>
+      </router-link>
+      <el-empty v-if="!page.records.length" description="暂无订单" />
+      <el-pagination v-model:current-page="query.page" v-model:page-size="query.size" :total="page.total" layout="prev, pager, next" @current-change="load"/>
     </section>
   </div>
 </template>

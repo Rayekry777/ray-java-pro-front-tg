@@ -98,7 +98,7 @@ onMounted(load);
     <el-alert v-if="loadError" title="桌台加载失败" :description="loadError" type="error" show-icon :closable="false">
       <template #default><el-button link type="primary" @click="load">重新加载</el-button></template>
     </el-alert>
-    <section v-else v-loading="loading" class="panel table-panel">
+    <section v-else v-loading="loading" class="panel table-panel desktop-data-table">
       <el-table :data="rows" empty-text="当前筛选条件下暂无桌台">
         <el-table-column prop="tableNo" label="桌号" width="110"><template #default="{ row }"><strong class="table-number">{{ row.tableNo }}</strong></template></el-table-column>
         <el-table-column prop="name" label="桌台名称" min-width="170" />
@@ -108,6 +108,15 @@ onMounted(load);
         <el-table-column label="状态" width="110"><template #default="{ row }"><el-tag :type="tableStatusMeta(row.status).type">{{ tableStatusMeta(row.status).label }}</el-tag></template></el-table-column>
         <el-table-column label="操作" :width="canManage ? 150 : 90" fixed="right"><template #default="{ row }"><template v-if="canManage"><el-button link type="primary" :disabled="!configurable(row)" @click="editTable(row)">编辑</el-button><el-button link type="danger" :disabled="!configurable(row)" @click="deleteTable(row)">删除</el-button></template><span v-else class="muted">只读</span></template></el-table-column>
       </el-table>
+    </section>
+    <section v-if="!loadError" v-loading="loading" class="mobile-card-list" aria-label="桌台列表">
+      <article v-for="row in rows" :key="row.id" class="mobile-data-card table-mobile-card">
+        <header><strong>{{ row.tableNo }}</strong><el-tag :type="tableStatusMeta(row.status).type">{{ tableStatusMeta(row.status).label }}</el-tag></header>
+        <p>{{ row.name }}</p>
+        <dl><div><dt>区域</dt><dd>{{ row.areaName }}</dd></div><div><dt>容量</dt><dd>{{ row.capacity }} 人</dd></div><div><dt>排序</dt><dd>{{ row.sort }}</dd></div></dl>
+        <footer v-if="canManage"><el-button link type="primary" @click="editTable(row)">编辑</el-button><el-button link type="danger" @click="deleteTable(row)">删除</el-button></footer>
+      </article>
+      <el-empty v-if="!rows.length" description="当前筛选条件下暂无桌台" />
     </section>
     <p v-if="canManage" class="table-maintenance-hint">有扫码入口或历史订单的桌台请改为“停用”，系统会保留业务追溯关系。</p>
 

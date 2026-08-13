@@ -25,10 +25,11 @@ const roleLabels: Record<string, string> = {
   WAITER: "服务员"
 };
 const primaryRoleLabel = computed(() => session.value?.roles.map(role => roleLabels[role] || role).join(" / ") || "当前员工");
-const navItems = computed(() => [
+type NavItem = { path: string; activePrefix?: string; label: string; icon: unknown; permission: string; disabled?: boolean };
+const navItems = computed<NavItem[]>(() => [
   { path: "/", label: "订单总览", icon: HomeFilled, permission: "order:read" },
   { path: "/orders", label: "订单中心", icon: List, permission: "order:read" },
-  { path: "/products/dishes", label: "商品管理", icon: Dish, permission: "product:read" },
+  { path: "/products/dishes", activePrefix: "/products", label: "商品管理", icon: Dish, permission: "product:read" },
   { path: "/tables", label: "桌台管理", icon: Grid, permission: "dining-table:read" },
   {
     path: merchantSession.hasPermission("rbac:manage") ? "/access" : "/employees",
@@ -40,8 +41,8 @@ const navItems = computed(() => [
   { path: "/reports", label: "经营报表", icon: DataAnalysis, permission: "report:read", disabled: true }
 ].filter(item => merchantSession.hasPermission(item.permission)));
 
-function isActive(path: string) {
-  return path === "/" ? route.path === "/" : route.path.startsWith(path);
+function isActive(path: string, activePrefix?: string) {
+  return path === "/" ? route.path === "/" : route.path.startsWith(activePrefix || path);
 }
 function openStores() {
   targetStoreId.value = session.value?.activeStore.id;
@@ -77,12 +78,8 @@ async function logout() {
     <aside class="sidebar" :class="{collapsed}">
       <router-link class="brand" to="/">
         <span class="brand-mark">R</span>
-        <strong>RAY 运营台</strong>
+        <span class="brand-copy"><strong>ray-tg</strong><small>商户端</small></span>
       </router-link>
-      <div class="role-card">
-        <strong>{{ primaryRoleLabel }}</strong>
-        <small>{{ session?.activeStore.name }}</small>
-      </div>
       <nav class="nav" aria-label="主要导航">
         <template v-for="item in navItems" :key="item.path">
           <span v-if="item.disabled" class="nav-disabled" title="接口待确认">
@@ -90,29 +87,29 @@ async function logout() {
             <span class="nav-label">{{ item.label }}</span>
             <b>待确认</b>
           </span>
-          <router-link v-else :to="item.path" :class="{active:isActive(item.path)}" @click="collapsed=true">
+          <router-link v-else :to="item.path" :class="{active:isActive(item.path, item.activePrefix)}" @click="collapsed=true">
             <el-icon class="nav-icon"><component :is="item.icon"/></el-icon>
             <span class="nav-label">{{ item.label }}</span>
           </router-link>
         </template>
       </nav>
-      <div class="shift-card">
-        <span>本班次</span>
-        <strong>{{ session?.employee.name }} · {{ primaryRoleLabel }}</strong>
-        <small>{{ session?.activeStore.name }} · {{ session?.activeStore.timezone }}</small>
-      </div>
+      <div class="sidebar-caption">ray-tg 商户端</div>
     </aside>
 
     <section class="app-main">
       <header class="topbar production-topbar">
         <button class="plain-icon mobile-menu" aria-label="切换导航" @click="collapsed=!collapsed"><el-icon><component :is="collapsed?Menu:CloseBold"/></el-icon></button>
-        <div class="live aggregate-label"><i class="live-dot"></i><span>订单只读 · 会话已就绪</span></div>
+        <div class="live aggregate-label"><i class="live-dot"></i><span>{{ session?.activeStore.name }} · 订单只读</span></div>
         <div class="top-actions">
-          <button class="store-switch-button" type="button" @click="openStores">{{ session?.activeStore.name }}⌄</button>
+          <button class="store-switch-button" type="button" aria-label="切换当前门店" @click="openStores">
+            <span>{{ session?.activeStore.name }}</span><b aria-hidden="true">⌄</b>
+          </button>
           <button class="plain-icon" aria-label="刷新当前页面" @click="router.go(0)"><el-icon><Refresh/></el-icon></button>
           <el-dropdown trigger="click">
-            <button class="account-button">
-              <span>{{ session?.employee.name }} · {{ primaryRoleLabel }}⌄</span>
+            <button class="account-button" aria-label="打开员工账号菜单">
+              <span class="account-avatar-mini">{{ session?.employee.name.slice(0, 1) }}</span>
+              <span class="account-copy"><strong>{{ session?.employee.name }}</strong><small>{{ primaryRoleLabel }}</small></span>
+              <b aria-hidden="true">⌄</b>
             </button>
             <template #dropdown>
               <el-dropdown-menu>
@@ -132,7 +129,7 @@ async function logout() {
           </Transition>
         </router-view>
       </main>
-      <footer class="production-footer"><span>Ray 运营台 · 当前权限由服务端会话提供</span><span>{{ session?.tenant.tenantCode }} · {{ session?.activeStore.storeCode }}</span></footer>
+      <footer class="production-footer"><span>ray-tg 商户端 · 当前权限由服务端会话提供</span><span>{{ session?.tenant.tenantCode }} · {{ session?.activeStore.storeCode }}</span></footer>
     </section>
 
     <el-dialog v-model="storeDialog" title="切换授权门店" width="min(560px, 94vw)">

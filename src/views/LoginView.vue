@@ -36,7 +36,7 @@ async function submit() {
 <template>
   <div class="login-page login">
     <section class="login-hero">
-      <div class="login-brand"><div class="hero-mark">R</div><strong>RAY 运营台</strong></div>
+      <div class="login-brand"><div class="hero-mark">R</div><strong>ray-tg 商户端</strong></div>
       <p>RESTAURANT ORDERS</p><h1>让每一笔订单<br>都清晰可查。</h1>
       <span>查看顾客提交的独立订单，并维护当前门店的桌台与商品。</span>
     </section>

@@ -1,0 +1,66 @@
+:root {
+  --ui-color-ink: #1d1d1f;
+  --ui-color-ink-strong: #081c2c;
+  --ui-color-muted: #6e6e73;
+  --ui-color-muted-soft: #8e8e93;
+  --ui-color-canvas: #f5f5f7;
+  --ui-color-surface: #ffffff;
+  --ui-color-surface-soft: #fafafc;
+  --ui-color-surface-tint: #f1f4f6;
+  --ui-color-line: #dedee3;
+  --ui-color-line-soft: #ececf0;
+  --ui-color-brand: #10283d;
+  --ui-color-brand-deep: #081b2a;
+  --ui-color-accent: #b88945;
+  --ui-color-accent-soft: #f5ecdf;
+  --ui-color-danger: #d93a31;
+  --ui-color-danger-soft: #fff0ef;
+  --ui-color-success: #248455;
+  --ui-color-success-soft: #eaf6ef;
+  --ui-color-warning: #a66b18;
+  --ui-color-warning-soft: #fff6e7;
+  --ui-color-info: #2b628d;
+  --ui-color-info-soft: #edf5fb;
+
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+  --ui-space-6: 24px;
+  --ui-space-8: 32px;
+  --ui-space-10: 40px;
+
+  --ui-radius-control: 10px;
+  --ui-radius-card: 16px;
+  --ui-radius-dialog: 20px;
+  --ui-radius-pill: 999px;
+
+  --ui-shadow-card: 0 1px 2px rgb(16 40 61 / 4%), 0 10px 32px rgb(16 40 61 / 5%);
+  --ui-shadow-float: 0 18px 60px rgb(8 27 42 / 14%);
+  --ui-shadow-focus: 0 0 0 4px rgb(184 137 69 / 18%);
+
+  --ui-motion-fast: 160ms;
+  --ui-motion-base: 220ms;
+  --ui-ease: cubic-bezier(.2, .8, .2, 1);
+
+  --ink: var(--ui-color-ink);
+  --navy: var(--ui-color-brand);
+  --navy-deep: var(--ui-color-brand-deep);
+  --muted: var(--ui-color-muted);
+  --paper: var(--ui-color-surface);
+  --mist: var(--ui-color-canvas);
+  --surface-subtle: var(--ui-color-surface-soft);
+  --line: var(--ui-color-line);
+  --red: var(--ui-color-danger);
+  --brass: var(--ui-color-accent);
+  --brass-soft: var(--ui-color-accent-soft);
+  --green: var(--ui-color-success);
+  --warning: var(--ui-color-warning);
+  --info: var(--ui-color-info);
+  --radius: var(--ui-radius-control);
+  --shadow-panel: var(--ui-shadow-card);
+  --motion-fast: var(--ui-motion-fast);
+  --motion-base: var(--ui-motion-base);
+  --ease-out: var(--ui-ease);
+}
