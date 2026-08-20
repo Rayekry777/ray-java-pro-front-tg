@@ -1,9 +1,6 @@
 export interface ApiResult<T> { code: number; data: T; msg?: string }
 export interface PageResult<T> { total: number; records: T[] }
 export interface Session { id: number; name: string; token: string; userName: string; tenantId: number; storeId: number }
-export interface BusinessData { newUsers: number; orderCompletionRate: number; turnover: number; unitPrice: number; validOrderCount: number }
-export interface ProductOverview { discontinued: number; sold: number }
-export interface OrderOverview { allOrders: number; cancelledOrders: number; completedOrders: number; deliveredOrders: number; waitingOrders: number }
 export interface DishFlavor { id?: number; dishId?: number; name: string; value: string }
 export interface Dish { id: number; name: string; categoryId: number; categoryName: string; price: number; image: string; description: string; status: number; updateTime: string; flavors?: DishFlavor[] }
 export interface DishPayload { id?: number; name: string; categoryId: number; price: number; image: string; description: string; status: number; flavors: DishFlavor[] }

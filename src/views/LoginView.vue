@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { authApi } from "@/api/services";
 import { errorMessage, saveToken } from "@/api/http";
 import { useMerchantSession } from "@/session/merchantSession";
 
 const router = useRouter();
+const route = useRoute();
 const merchantSession = useMerchantSession();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
@@ -28,7 +29,12 @@ async function submit() {
       ORDERS: "/orders",
       OVERVIEW: "/"
     }[current.suggestedWorkspace] || "/";
-    await router.replace(target);
+    const redirect = typeof route.query.redirect === "string"
+      && route.query.redirect.startsWith("/")
+      && !route.query.redirect.startsWith("//")
+      ? route.query.redirect
+      : target;
+    await router.replace(redirect);
   } catch (error) { ElMessage.error(errorMessage(error)); }
   finally { loading.value = false; }
 }

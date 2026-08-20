@@ -21,15 +21,17 @@ http.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       sessionStorage.removeItem(TOKEN_KEY);
-      sessionStorage.removeItem("ray-admin-user");
-      if (location.pathname !== "/login") location.assign("/login");
+      if (location.pathname !== "/login") {
+        const redirect = `${location.pathname}${location.search}${location.hash}`;
+        location.assign(`/login?redirect=${encodeURIComponent(redirect)}`);
+      }
     }
     return Promise.reject(error);
   }
 );
 
 export function saveToken(token: string) { sessionStorage.setItem(TOKEN_KEY, token); }
-export function clearSession() { sessionStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem("ray-admin-user"); }
+export function clearSession() { sessionStorage.removeItem(TOKEN_KEY); }
 export function hasToken() { return Boolean(sessionStorage.getItem(TOKEN_KEY)); }
 export function errorMessage(error: unknown) {
   if (axios.isAxiosError(error)) return error.response?.data?.msg || (error.code === "ECONNABORTED" ? "请求超时，请稍后重试" : error.message);

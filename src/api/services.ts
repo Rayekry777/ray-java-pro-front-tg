@@ -1,10 +1,10 @@
 import { http } from "./http";
 import type {
-  ApiResult, AuthorizedStore, BusinessData, BusinessMode, Category, CategoryPayload, DiningArea,
+  ApiResult, AuthorizedStore, BusinessMode, Category, CategoryPayload, DiningArea,
   DiningTable, DiningTableCreatePayload, DiningTableUpdatePayload, Dish, DishPayload, Employee,
   EmployeePayload, EmployeeStoreAssignment, MerchantSession,
-  FoodOrder, OrderOverview, OrderServiceMode, OrderSummary, PageResult,
-  PermissionDefinition, ProductOverview, Session, Setmeal, SetmealPayload,
+  FoodOrder, OrderServiceMode, OrderSummary, PageResult,
+  PermissionDefinition, Session, Setmeal, SetmealPayload,
   ShopBusinessSettings, StoreSwitchResult, TenantRole, WeeklyBusinessSchedule,
   OrderReport, SalesTop10Report, TurnoverReport, UserReport
 } from "@/types";
@@ -51,10 +51,6 @@ export const rbacApi = {
     data<unknown>(http.put(`/merchant/v1/rbac/employees/${employeeId}/stores`, body))
 };
 export const workspaceApi = {
-  business: () => data<BusinessData>(http.get("/merchant/v1/workspace/businessData")),
-  dishes: () => data<ProductOverview>(http.get("/merchant/v1/workspace/overviewDishes")),
-  setmeals: () => data<ProductOverview>(http.get("/merchant/v1/workspace/overviewSetmeals")),
-  orders: () => data<OrderOverview>(http.get("/merchant/v1/workspace/overviewOrders")),
   shopStatus: () => data<number>(http.get("/merchant/v1/shop/status")),
   setShopStatus: (status: number) => data<unknown>(http.put(`/merchant/v1/shop/${status}`)),
   shopBusinessSettings: () => data<ShopBusinessSettings>(http.get("/merchant/v1/shop/business-settings")),
