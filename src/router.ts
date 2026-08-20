@@ -7,13 +7,14 @@ import DashboardView from "@/views/DashboardView.vue";
 import OrdersView from "@/views/OrdersView.vue";
 import OrderDetailView from "@/views/OrderDetailView.vue";
 import ResourceView from "@/views/ResourceView.vue";
-import ReportsView from "@/views/ReportsView.vue";
 import AccountView from "@/views/AccountView.vue";
 import StoreSettingsView from "@/views/StoreSettingsView.vue";
 import DiningTablesView from "@/views/DiningTablesView.vue";
 import EmployeeAccessView from "@/views/EmployeeAccessView.vue";
 import ForbiddenView from "@/views/ForbiddenView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
+
+const ReportsView = () => import("@/views/ReportsView.vue");
 
 const router = createRouter({
   history: createWebHistory(),

@@ -5,7 +5,8 @@ import type {
   EmployeePayload, EmployeeStoreAssignment, MerchantSession,
   FoodOrder, OrderOverview, OrderServiceMode, OrderSummary, PageResult,
   PermissionDefinition, ProductOverview, Session, Setmeal, SetmealPayload,
-  ShopBusinessSettings, StoreSwitchResult, TenantRole, WeeklyBusinessSchedule
+  ShopBusinessSettings, StoreSwitchResult, TenantRole, WeeklyBusinessSchedule,
+  OrderReport, SalesTop10Report, TurnoverReport, UserReport
 } from "@/types";
 
 const data = async <T>(request: Promise<{ data: ApiResult<T> }>) => (await request).data.data;
@@ -104,9 +105,9 @@ export const resourceApi = {
   }
 };
 export const reportApi = {
-  turnover: (begin: string, end: string) => data<{ dateList: string; turnoverList: string }>(http.get("/merchant/v1/report/turnoverStatistics", { params: { begin, end } })),
-  users: (begin: string, end: string) => data<{ dateList: string; newUserList: string; totalUserList: string }>(http.get("/merchant/v1/report/userStatistics", { params: { begin, end } })),
-  orders: (begin: string, end: string) => data<{ dateList: string; orderCountList: string; validOrderCountList: string; totalOrderCount: number; validOrderCount: number; orderCompletionRate: number }>(http.get("/merchant/v1/report/ordersStatistics", { params: { begin, end } })),
-  top10: (begin: string, end: string) => data<{ nameList: string; numberList: string }>(http.get("/merchant/v1/report/top10", { params: { begin, end } })),
-  exportFile: async () => (await http.get("/merchant/v1/report/export", { responseType: "blob" })).data as Blob
+  turnover: (begin: string, end: string) => data<TurnoverReport>(http.get("/merchant/v1/report/turnoverStatistics", { params: { begin, end } })),
+  users: (begin: string, end: string) => data<UserReport>(http.get("/merchant/v1/report/userStatistics", { params: { begin, end } })),
+  orders: (begin: string, end: string) => data<OrderReport>(http.get("/merchant/v1/report/ordersStatistics", { params: { begin, end } })),
+  top10: (begin: string, end: string) => data<SalesTop10Report>(http.get("/merchant/v1/report/top10", { params: { begin, end } })),
+  exportFile: (begin: string, end: string) => http.get<Blob>("/merchant/v1/report/export", { params: { begin, end }, responseType: "blob" })
 };

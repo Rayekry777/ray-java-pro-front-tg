@@ -31,7 +31,7 @@
 | `/products/*` | 分类、菜品、套餐 | `product:*` |
 | `/employees`、`/access` | 员工和角色授权 | `employee:*` |
 | `/store`、`/account` | 营业设置与账号安全 | `shop:manage` / 登录态 |
-| `/reports` | 报表占位 | 接口未知时不发请求 |
+| `/reports` | 经营指标、趋势图、销量 Top10 和 Excel 导出 | 读 `report:read`，导出 `report:export` |
 | `/forbidden` | 无权限反馈 | 公共 |
 
 不存在 `/operations`、`/bills`、`/kitchen`、`/serve-tasks` 生产路由。
@@ -46,6 +46,14 @@
 
 页面不得调用旧 `/merchant/v1/bills/**` 或 `/merchant/v1/operations/live`。
 
+## 经营报表
+
+- 页面调用 `/api/merchant/v1/report/turnoverStatistics`、`ordersStatistics`、`top10`、`userStatistics` 和 `export`。
+- 查询参数统一为包含首尾日期的 `begin/end=yyyy-MM-dd`；租户和门店由服务端会话确定，前端不提交隔离字段。
+- 默认近 30 天，支持近 7/30/90 天和自定义日期；快捷选中态必须与当前范围同步。
+- 菜单和路由需要 `report:read`，导出按钮需要 `report:export`；切店后保留当前路由并重新加载当前门店数据。
+- 图表使用按需注册的 ECharts，并在 760px 以下切换为单列，日期控件不得产生页面级横向滚动。
+
 ## 桌台规则
 
 - 新建与修改只提交区域、桌号、名称、容量、排序、状态和乐观锁版本。
@@ -58,6 +66,13 @@
 - `npm run typecheck`
 - `npm run build`
 - 人工覆盖登录、切店、订单筛选/详情、桌台 CRUD、无权限、401/403/409 和窄屏布局。
+
+## 2026-08-20 经营报表恢复记录
+
+- 恢复结构化报表类型、日期参数、Excel Blob 导出、ECharts 5 按需图表和当前 Cupertino 页面风格。
+- 近 7/30/90 天快捷项由响应式状态控制；点击后选中态同步移动，手动选择日期时取消快捷选中。
+- 切店保留 `/reports` 路由并按门店 ID 重建页面；每次加载前清空旧数据，避免跨门店或跨日期残留。
+- `npm run typecheck` 与 `npm run build` 已通过；Vite 仍提示现有入口包体积超过 500 kB，不影响构建产物。
 
 ## 2026-08-12 重构记录
 

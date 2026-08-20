@@ -113,3 +113,14 @@ export interface TenantRole {
 }
 export interface PermissionDefinition { code: string; name: string }
 export interface EmployeeStoreAssignment { storeIds: number[]; defaultStoreId: number }
+export interface TurnoverReport { dateList: string[]; turnoverList: number[] }
+export interface OrderReport {
+  dateList: string[];
+  orderCountList: number[];
+  validOrderCountList: number[];
+  totalOrderCount: number;
+  validOrderCount: number;
+  orderCompletionRate: number;
+}
+export interface SalesTop10Report { nameList: string[]; numberList: number[] }
+export interface UserReport { dateList: string[]; totalUserList: number[]; newUserList: number[] }

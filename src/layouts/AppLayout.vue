@@ -25,7 +25,7 @@ const roleLabels: Record<string, string> = {
   WAITER: "服务员"
 };
 const primaryRoleLabel = computed(() => session.value?.roles.map(role => roleLabels[role] || role).join(" / ") || "当前员工");
-type NavItem = { path: string; activePrefix?: string; label: string; icon: unknown; permission: string; disabled?: boolean };
+type NavItem = { path: string; activePrefix?: string; label: string; icon: unknown; permission: string };
 const navItems = computed<NavItem[]>(() => [
   { path: "/", label: "订单总览", icon: HomeFilled, permission: "order:read" },
   { path: "/orders", label: "订单中心", icon: List, permission: "order:read" },
@@ -38,7 +38,7 @@ const navItems = computed<NavItem[]>(() => [
     permission: merchantSession.hasPermission("rbac:manage") ? "rbac:manage" : "employee:read"
   },
   { path: "/store", label: "门店设置", icon: Shop, permission: "shop:manage" },
-  { path: "/reports", label: "经营报表", icon: DataAnalysis, permission: "report:read", disabled: true }
+  { path: "/reports", label: "经营报表", icon: DataAnalysis, permission: "report:read" }
 ].filter(item => merchantSession.hasPermission(item.permission)));
 
 function isActive(path: string, activePrefix?: string) {
@@ -58,7 +58,6 @@ async function switchStore() {
     await merchantSession.switchStore(targetStoreId.value);
     storeDialog.value = false;
     ElMessage.success(`已切换至 ${session.value?.activeStore.name}`);
-    await router.replace("/");
   } catch (error) {
     ElMessage.error(errorMessage(error));
   } finally { switching.value = false; }
@@ -82,12 +81,7 @@ async function logout() {
       </router-link>
       <nav class="nav" aria-label="主要导航">
         <template v-for="item in navItems" :key="item.path">
-          <span v-if="item.disabled" class="nav-disabled" title="接口待确认">
-            <el-icon class="nav-icon"><component :is="item.icon"/></el-icon>
-            <span class="nav-label">{{ item.label }}</span>
-            <b>待确认</b>
-          </span>
-          <router-link v-else :to="item.path" :class="{active:isActive(item.path, item.activePrefix)}" @click="collapsed=true">
+          <router-link :to="item.path" :class="{active:isActive(item.path, item.activePrefix)}" @click="collapsed=true">
             <el-icon class="nav-icon"><component :is="item.icon"/></el-icon>
             <span class="nav-label">{{ item.label }}</span>
           </router-link>
@@ -125,7 +119,7 @@ async function logout() {
       <main>
         <router-view v-slot="{ Component, route: currentRoute }">
           <Transition name="route-stage" mode="out-in">
-            <component :is="Component" :key="currentRoute.path"/>
+            <component :is="Component" :key="`${currentRoute.path}:${session?.activeStore.id || 0}`"/>
           </Transition>
         </router-view>
       </main>
@@ -133,7 +127,7 @@ async function logout() {
     </section>
 
     <el-dialog v-model="storeDialog" title="切换授权门店" width="min(560px, 94vw)">
-      <p class="muted">切换成功后将替换 Token、重新加载岗位权限，并回到新门店的经营总览。</p>
+      <p class="muted">切换成功后将替换 Token、重新加载岗位权限，并刷新当前页面的门店数据。</p>
       <div class="store-options">
         <button v-for="store in session?.authorizedStores" :key="store.id" class="store-option" :class="{selected:targetStoreId===store.id}" @click="targetStoreId=store.id">
           <strong>{{ store.name }}</strong><small>{{ store.storeCode }} · {{ store.timezone }}<template v-if="store.defaultStore"> · 默认门店</template></small>
